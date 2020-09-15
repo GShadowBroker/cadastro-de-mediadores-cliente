@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing App.js Taking a snapshot and comparing 1`] = `
+<h1
+  onClick={[Function]}
+>
+  Hello world!
+</h1>
+`;

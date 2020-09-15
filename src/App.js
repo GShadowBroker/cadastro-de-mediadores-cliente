@@ -1,26 +1,62 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
+import Login from "./pages/Login";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+  const [logged, setLogged] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setLogged(true);
+    }, 1000);
+  };
+
+  const handleLogout = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setLogged(false);
+    }, 1000);
+  };
+
+  if (logged) {
+    return (
+      <Switch>
+        <Route path="/protected">
+          <div>
+            <h1>You are now logged in!</h1>
+            {loading ? (
+              <button>aguarde...</button>
+            ) : (
+              <button onClick={handleLogout}>logout</button>
+            )}
+          </div>
+        </Route>
+        <Route path="*">
+          <Redirect to="/protected" />
+        </Route>
+      </Switch>
+    );
+  } else {
+    return (
+      <Switch>
+        <Route path="/login">
+          <Login handleLogin={handleLogin} loading={loading} />
+        </Route>
+        <Route path="/registro">
+          <div>
+            <h1>Register!</h1>
+          </div>
+        </Route>
+        <Route path="*">
+          <Redirect to="/login" />
+        </Route>
+      </Switch>
+    );
+  }
+};
 
 export default App;
