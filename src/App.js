@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import Login from "./pages/Login";
+import Login from "./pages/login/Login";
+import Register from "./pages/registration/Register";
 
 const App = () => {
   const [logged, setLogged] = useState(false);
@@ -47,9 +48,7 @@ const App = () => {
           <Login handleLogin={handleLogin} loading={loading} />
         </Route>
         <Route path="/registro">
-          <div>
-            <h1>Register!</h1>
-          </div>
+          <Register />
         </Route>
         <Route path="*">
           <Redirect to="/login" />

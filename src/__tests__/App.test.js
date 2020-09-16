@@ -20,7 +20,7 @@ afterEach(() => {
 describe("Testing App.js", () => {
   test("renders hello world", () => {
     const { getByText } = render(<App />);
-    const linkElement = getByText(/hello world/i);
+    const linkElement = getByText(/login/i);
     expect(linkElement).toBeInTheDocument();
   });
 

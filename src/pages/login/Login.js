@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import colors from "../constants/colors";
-import LoginForm from "../components/authentication/LoginForm";
+import colors from "../../constants/colors";
+import LoginForm from "../../components/authentication/LoginForm";
+import { Link } from "react-router-dom";
+import { Button } from "@material-ui/core";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -20,7 +22,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  color: ${colors.light.text};
+  color: ${colors.light.secondary.main};
 `;
 
 const LoginCard = styled.div`
@@ -29,6 +31,7 @@ const LoginCard = styled.div`
   height: 500px;
   width: 100%;
   display: flex;
+  background: ${colors.light.background};
 `;
 
 const FooterContainer = styled.div`
@@ -97,11 +100,11 @@ const Header = styled.h1`
 
 const SubHeader = styled.div`
   text-align: center;
-  color: ${colors.light.textSecondary};
+  color: ${colors.light.secondary.light};
 `;
 
 const OrLine = styled.div`
-  border-top: 1px solid ${colors.light.textSecondary};
+  border-top: 1px solid ${colors.light.secondary.light};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,6 +112,7 @@ const OrLine = styled.div`
   height: 0px;
   max-width: 75%;
   margin: auto;
+  margin-bottom: 20px;
 
   span {
     background: ${colors.light.background};
@@ -116,11 +120,11 @@ const OrLine = styled.div`
   }
 `;
 
-const OutlinedButton = styled.button`
+/* const OutlinedButton = styled.button`
   cursor: pointer;
-  border: 1px solid ${colors.light.button};
+  border: 1px solid ${colors.light.primary.main};
   background-color: #fff;
-  color: black;
+  color: ${colors.light.primary.main};
   font-weight: bold;
 
   height: 36px;
@@ -129,18 +133,34 @@ const OutlinedButton = styled.button`
   border-radius: 5px;
   transition: all 0.2s linear;
 
-  &:hover {
-    background-color: ${colors.light.button};
-    color: #fff;
+  position: relative;
+  a {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+
+    color: inherit;
+    text-decoration: none;
   }
-`;
+
+  &:hover {
+    background-color: ${colors.light.primary.main};
+    color: ${colors.light.primary.contrastText};
+  }
+`; */
 
 const Login = ({ handleLogin, loading }) => {
   return (
     <Wrapper>
       <Container>
         <LoginCard>
-          <ImageContainer source={require("../assets/images/mediation.jpg")}>
+          <ImageContainer source={require("../../assets/images/mediation.jpg")}>
             <Filter />
           </ImageContainer>
           <FormContainer>
@@ -152,7 +172,16 @@ const Login = ({ handleLogin, loading }) => {
             <OrLine>
               <span>ou</span>
             </OrLine>
-            <OutlinedButton>CADASTRE-SE</OutlinedButton>
+            <Button
+              variant="outlined"
+              color="primary"
+              fullWidth
+              component={Link}
+              to="/registro"
+              style={{ color: colors.light.primary.main }}
+            >
+              CADASTRE-SE
+            </Button>
           </FormContainer>
         </LoginCard>
 
