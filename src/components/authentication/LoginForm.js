@@ -10,6 +10,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { useForm } from "react-hook-form";
 
 const Form = styled.form`
   flex: 1;
@@ -35,20 +36,57 @@ const ActionGroup = styled(InputGroup)``;
 
 const LoginForm = ({ handleLogin, loading }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { register, errors, handleSubmit } = useForm();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleLoginSubmit = (data) => {
+    console.log("data", data);
     handleLogin();
   };
 
+  const getErrorMessagePassword = (error) => {
+    switch (error.type) {
+      case "required":
+        return "Digite a sua senha";
+      case "maxLength":
+        return "A senha deve ter no máximo 55 caractéres";
+      case "minLength":
+        return "A senha deve ter no mínimo 5 caractéres";
+      default:
+        return "Campo inválido";
+    }
+  };
+  const getErrorMessageEmail = (error) => {
+    switch (error.type) {
+      case "required":
+        return "Digite o seu e-mail";
+      case "pattern":
+        return "Digite um e-mail válido";
+      default:
+        return "Campo inválido";
+    }
+  };
+
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit(handleLoginSubmit)}>
       <InputGroup>
-        <TextField id="email" label="E-mail" variant="outlined" />
+        <TextField
+          id="email"
+          name="email"
+          label="E-mail"
+          variant="outlined"
+          size="small"
+          inputRef={register({
+            required: true,
+            pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
+          })}
+          helperText={errors.email && getErrorMessageEmail(errors.email)}
+          error={!!errors.email}
+        />
       </InputGroup>
       <InputGroup>
         <TextField
           id="password"
+          name="password"
           type={showPassword ? "text" : "password"}
           label="Senha"
           variant="outlined"
@@ -64,6 +102,12 @@ const LoginForm = ({ handleLogin, loading }) => {
               </InputAdornment>
             ),
           }}
+          size="small"
+          inputRef={register({ required: true, maxLength: 55, minLength: 5 })}
+          helperText={
+            errors.password && getErrorMessagePassword(errors.password)
+          }
+          error={!!errors.password}
         />
         <ForgotPassword>
           <Link to="/recuperar_senha">Esqueceu a senha?</Link>

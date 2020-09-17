@@ -90,7 +90,7 @@ const FormContainer = styled.div`
   height: 100%;
   width: 50%;
 
-  padding: 0 7rem;
+  padding: 2rem 7rem 0 7rem;
   font-size: 0.9em;
 `;
 
@@ -119,41 +119,6 @@ const OrLine = styled.div`
     padding: 0 1.5em;
   }
 `;
-
-/* const OutlinedButton = styled.button`
-  cursor: pointer;
-  border: 1px solid ${colors.light.primary.main};
-  background-color: #fff;
-  color: ${colors.light.primary.main};
-  font-weight: bold;
-
-  height: 36px;
-  width: 100%;
-  margin-top: 1.5em;
-  border-radius: 5px;
-  transition: all 0.2s linear;
-
-  position: relative;
-  a {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
-
-    color: inherit;
-    text-decoration: none;
-  }
-
-  &:hover {
-    background-color: ${colors.light.primary.main};
-    color: ${colors.light.primary.contrastText};
-  }
-`; */
 
 const Login = ({ handleLogin, loading }) => {
   return (
