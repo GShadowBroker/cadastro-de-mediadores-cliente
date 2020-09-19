@@ -20,15 +20,22 @@ const ActionGroup = styled.div`
 
 const InputGroup = styled.div`
   margin: 1rem 0;
-  width: 230px;
+  width: 300px;
+  max-width: 100%;
 `;
 
-const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
+const Step1 = ({
+  handleNext,
+  handleBack,
+  personal,
+  setPersonal,
+  accountType,
+}) => {
   const { register, handleSubmit, control, errors } = useForm();
 
   const submitStep = (data) => {
-    let { name, sex, birthday } = data;
-    if (!data.cpf || !name || !sex || !birthday) return;
+    let { fullname, sex, birthday } = data;
+    if (!data.cpf || !fullname || !sex || !birthday) return;
     if (!["feminino", "masculino"].includes(sex)) return;
     setPersonal({
       ...data,
@@ -42,7 +49,6 @@ const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
   };
 
   const validateBirthdate = (value) => {
-    console.log("date", value);
     if (new Date(value) >= new Date() - 1000 * 60 * 60 * 24 * 30 * 12 * 18)
       return false;
     else if (new Date(value) <= new Date("1900-01-01")) return false;
@@ -64,7 +70,7 @@ const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
   const getErrorMessageCpf = (error) => {
     switch (error.type) {
       case "required":
-        return "O CPF é obrigatório";
+        return "O número do CPF é obrigatório";
       case "validate":
         return "O CPF informado é inválido";
       default:
@@ -75,7 +81,7 @@ const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
   return (
     <Form onSubmit={handleSubmit(submitStep)} noValidate>
       <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
-        Dados pessoais do mediador
+        Dados pessoais do {accountType === "mediador" ? "mediador" : "usuário"}
       </FormLabel>
       <InputGroup>
         <TextField
@@ -93,20 +99,22 @@ const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
           })}
           helperText={errors.cpf && getErrorMessageCpf(errors.cpf)}
           error={!!errors.cpf}
+          style={{ minWidth: "100%" }}
         />
       </InputGroup>
       <InputGroup>
         <TextField
-          id="name"
-          name="name"
+          id="fullname"
+          name="fullname"
           label="Nome completo"
           type="text"
           variant="outlined"
-          defaultValue={personal.name}
+          defaultValue={personal.fullname}
           required
           inputRef={register({ required: true, maxLength: 150, minLength: 4 })}
-          helperText={errors.name && getErrorMessageName(errors.name)}
-          error={!!errors.name}
+          helperText={errors.fullname && getErrorMessageName(errors.fullname)}
+          error={!!errors.fullname}
+          style={{ minWidth: "100%" }}
         />
       </InputGroup>
 
@@ -118,12 +126,13 @@ const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
           name="sex"
           select
           label="Sexo"
-          defaultValue={personal.sex}
+          defaultValue={personal.sex || "selecione"}
           variant="outlined"
           required
           rules={{ required: true, validate: validateSex }}
-          helperText={errors.sex && "Você deve selecionar o sexo"}
+          helperText={errors.sex && "O sexo é obrigatório"}
           error={!!errors.sex}
+          style={{ minWidth: "100%" }}
         >
           <MenuItem value="selecione">Selecione</MenuItem>
           <MenuItem value="feminino">Feminino</MenuItem>
@@ -147,6 +156,7 @@ const Step1 = ({ handleNext, handleBack, personal, setPersonal }) => {
             errors.birthday && "Data de nascimento inválida ou inverossímil"
           }
           error={!!errors.birthday}
+          style={{ minWidth: "100%" }}
         />
       </InputGroup>
 

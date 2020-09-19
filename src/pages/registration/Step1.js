@@ -55,6 +55,7 @@ const Step1 = ({ accountType, setAccountType, handleNext }) => {
           name="cadastro"
           value={accountType}
           onChange={(e) => setAccountType(e.target.value)}
+          style={{ minWidth: "100%" }}
         >
           <LabelControl
             value="usuario"

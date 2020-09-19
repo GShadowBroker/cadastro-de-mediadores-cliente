@@ -15,6 +15,9 @@ import MailOutlineIcon from "@material-ui/icons/MailOutline";
 
 import Step1 from "./Step1";
 import Step2 from "./Step2";
+import Professional from "./Professional";
+import Contact from "./Contact";
+import Finish from "./Finish";
 
 const FormContainer = styled(Card)`
   padding: 25px;
@@ -40,28 +43,54 @@ const useStyles = makeStyles((theme) => ({
 
 const getSteps = (type) => {
   return type === "mediador"
-    ? ["Tipo de conta", "Dados pessoais", "Dados profissionais", "Contato"]
-    : ["Tipo de conta", "Dados pessoais", "Contato"];
+    ? [
+        "Tipo de conta",
+        "Dados pessoais",
+        "Dados profissionais",
+        "Contato",
+        "Finalizar",
+      ]
+    : ["Tipo de conta", "Dados pessoais", "Contato", "Finalizar"];
 };
 
 const Register = () => {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(2);
   const [skipped, setSkipped] = useState(new Set());
   // Form data
-  const [accountType, setAccountType] = useState("usuario");
-
+  const [accountType, setAccountType] = useState("mediador");
   const [personal, setPersonal] = useState({
     cpf: "",
-    name: "",
-    sex: "selecione",
+    fullname: "",
+    sex: "",
     birthday: "2000-01-01",
+  });
+  const [professional, setProfessional] = useState({
+    certification: "",
+    average_value: "",
+    attachment: "",
+    specialization: "",
+    lattes: "",
+    resume: "",
+    actuation_units: [],
+    actuation_city: "",
+    actuation_uf: "",
+  });
+  const [contact, setContact] = useState({
+    email: "",
+    alternative_email: "",
+    phone: "",
+    cellphone: "",
+  });
+  const [confirm, setConfirm] = useState({
+    password: "",
+    acceptTerms: false,
   });
 
   const steps = getSteps(accountType);
 
   const getStepContent = (step) => {
-    if (steps.length > 3) {
+    if (steps.length > 4) {
       switch (step) {
         case 0:
           return (
@@ -79,12 +108,37 @@ const Register = () => {
               handleBack={handleBack}
               personal={personal}
               setPersonal={setPersonal}
+              accountType={accountType}
             />
           );
         case 2:
-          return <Typography variant="h5">Profissional</Typography>;
+          return (
+            <Professional
+              handleNext={handleNext}
+              handleBack={handleBack}
+              professional={professional}
+              setProfessional={setProfessional}
+            />
+          );
         case 3:
-          return <Typography variant="h5">Contato</Typography>;
+          return (
+            <Contact
+              handleNext={handleNext}
+              handleBack={handleBack}
+              contact={contact}
+              setContact={setContact}
+              accountType={accountType}
+            />
+          );
+        case 4:
+          return (
+            <Finish
+              handleNext={handleNext}
+              handleBack={handleBack}
+              confirm={confirm}
+              setConfirm={setConfirm}
+            />
+          );
         default:
           return "Unknown step";
       }
@@ -106,10 +160,28 @@ const Register = () => {
               handleBack={handleBack}
               personal={personal}
               setPersonal={setPersonal}
+              accountType={accountType}
             />
           );
         case 2:
-          return <Typography variant="h5">Contato</Typography>;
+          return (
+            <Contact
+              handleNext={handleNext}
+              handleBack={handleBack}
+              contact={contact}
+              setContact={setContact}
+              accountType={accountType}
+            />
+          );
+        case 3:
+          return (
+            <Finish
+              handleNext={handleNext}
+              handleBack={handleBack}
+              confirm={confirm}
+              setConfirm={setConfirm}
+            />
+          );
         default:
           return "Unknown step";
       }
@@ -152,7 +224,11 @@ const Register = () => {
             <div>
               <Typography
                 variant="h5"
-                style={{ display: "flex", alignItems: "center" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "1rem",
+                }}
               >
                 <MailOutlineIcon />{" "}
                 <span style={{ marginLeft: 5 }}>Confirme sua conta</span>
@@ -163,32 +239,12 @@ const Register = () => {
                 não encontrar o e-mail, verifique sua caixa de spam/lixo
                 eletrônico.
               </Typography>
-              {/* <Button onClick={handleReset} className={classes.button}>
-                Resetar
-              </Button> */}
             </div>
           ) : (
             <div>
               <div className={classes.instructions}>
                 {getStepContent(activeStep)}
               </div>
-              {/* <div>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  className={classes.button}
-                >
-                  Voltar
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  className={classes.button}
-                >
-                  {activeStep === steps.length - 1 ? "Concluir" : "Próximo"}
-                </Button>
-              </div> */}
             </div>
           )}
         </FormContainer>

@@ -50,7 +50,7 @@ const LoginForm = ({ handleLogin, loading }) => {
       case "maxLength":
         return "A senha deve ter no máximo 55 caractéres";
       case "minLength":
-        return "A senha deve ter no mínimo 5 caractéres";
+        return "A senha deve ter no mínimo 6 caractéres";
       default:
         return "Campo inválido";
     }
@@ -103,7 +103,7 @@ const LoginForm = ({ handleLogin, loading }) => {
             ),
           }}
           size="small"
-          inputRef={register({ required: true, maxLength: 55, minLength: 5 })}
+          inputRef={register({ required: true, maxLength: 55, minLength: 6 })}
           helperText={
             errors.password && getErrorMessagePassword(errors.password)
           }
