@@ -63,17 +63,6 @@ const Register = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   // Form data
-  const [professional, setProfessional] = useState({
-    certification: "",
-    average_value: "",
-    attachment: "",
-    specialization: "",
-    lattes: "",
-    resume: "",
-    actuation_units: [],
-    actuation_city: "",
-    actuation_uf: "",
-  });
 
   const steps = getSteps(accountType);
 
@@ -86,12 +75,7 @@ const Register = () => {
           return <Step2 handleNext={handleNext} handleBack={handleBack} />;
         case 2:
           return (
-            <Professional
-              handleNext={handleNext}
-              handleBack={handleBack}
-              professional={professional}
-              setProfessional={setProfessional}
-            />
+            <Professional handleNext={handleNext} handleBack={handleBack} />
           );
         case 3:
           return <Contact handleNext={handleNext} handleBack={handleBack} />;
