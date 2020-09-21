@@ -11,6 +11,8 @@ import {
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { submitConfirm } from "../../store/registrationReducer";
 
 const Form = styled.form`
   display: flex;
@@ -32,7 +34,10 @@ const InputGroup = styled.div`
   max-width: 100%;
 `;
 
-const Finish = ({ handleNext, handleBack, confirm, setConfirm }) => {
+const Finish = ({ handleNext, handleBack }) => {
+  const dispatch = useDispatch();
+  const confirm = useSelector((state) => state.registrationReducer.confirm);
+
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, errors, watch } = useForm();
 
@@ -41,9 +46,10 @@ const Finish = ({ handleNext, handleBack, confirm, setConfirm }) => {
   const submitStep = (data) => {
     const { password, acceptTerms } = data;
     if (!password || !acceptTerms) return;
-    setConfirm({
+    const confirmInfo = {
       ...data,
-    });
+    };
+    dispatch(submitConfirm(confirmInfo));
     handleNext(); // SAVE TO DATABASE FIRST!!!
   };
 

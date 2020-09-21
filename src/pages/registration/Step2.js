@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { FormLabel, Button, TextField, MenuItem } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 import { cpf } from "cpf-cnpj-validator";
+import { useDispatch, useSelector } from "react-redux";
+import { submitPersonal } from "../../store/registrationReducer";
 
 const Form = styled.form`
   display: flex;
@@ -24,23 +26,24 @@ const InputGroup = styled.div`
   max-width: 100%;
 `;
 
-const Step1 = ({
-  handleNext,
-  handleBack,
-  personal,
-  setPersonal,
-  accountType,
-}) => {
+const Step1 = ({ handleNext, handleBack }) => {
+  const dispatch = useDispatch();
+  const personal = useSelector((state) => state.registrationReducer.personal);
+  const accountType = useSelector(
+    (state) => state.registrationReducer.accountType
+  );
+
   const { register, handleSubmit, control, errors } = useForm();
 
   const submitStep = (data) => {
     let { fullname, sex, birthday } = data;
     if (!data.cpf || !fullname || !sex || !birthday) return;
     if (!["feminino", "masculino"].includes(sex)) return;
-    setPersonal({
+    const personalInfo = {
       ...data,
       cpf: cpf.format(data.cpf),
-    });
+    };
+    dispatch(submitPersonal(personalInfo));
     handleNext();
   };
 

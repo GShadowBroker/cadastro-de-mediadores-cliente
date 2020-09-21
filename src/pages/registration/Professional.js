@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   FormLabel,
@@ -17,6 +17,12 @@ import { Autocomplete } from "@material-ui/lab";
 import { useForm, Controller } from "react-hook-form";
 import isValidURL from "../../utils/isValidURL";
 import courts from "../../assets/data/courts";
+import Snackbar from "../../components/utils/Snackbar";
+import { useDispatch, useSelector } from "react-redux";
+import { submitProfessional } from "../../store/registrationReducer";
+import { getUfList, getCitiesByUf } from "../../services/ibgeService";
+import Spinner from "../../components/utils/Spinner";
+import colors from "../../constants/colors";
 
 const Form = styled.form`
   display: flex;
@@ -47,16 +53,45 @@ const ChipPaper = styled(Paper)`
   margin: 1rem 0;
 `;
 
-const Professional = ({
-  handleNext,
-  handleBack,
-  professional,
-  setProfessional,
-}) => {
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  color: ${colors.light.secondary.light};
+
+  & > div:first-of-type {
+    margin-right: 0.5rem;
+  }
+`;
+
+const Professional = ({ handleNext, handleBack }) => {
+  const dispatch = useDispatch();
+  const professional = useSelector(
+    (state) => state.registrationReducer.professional
+  );
+
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const [isCityDisabled, setIsCityDisabled] = useState(true);
+  const [loadingCities, setLoadingCities] = useState(false);
+
+  useEffect(() => {
+    getUfList()
+      .then((ufList) => {
+        const sortedUfList = ufList.sort((a, b) => (a.nome > b.nome ? 1 : -1));
+        setStates(sortedUfList);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackSeverity] = useState("success");
 
   const [inputUnit, setInputUnit] = useState("");
-  const [units, setUnits] = useState(["TJMS", "TJBA"]);
+  const [units, setUnits] = useState([]);
 
   const { register, handleSubmit, control, errors, watch } = useForm();
   const watchCivel = watch("civel");
@@ -64,6 +99,22 @@ const Professional = ({
   const watchEmpresarial = watch("empresarial");
   const watchCertification = watch("certification");
   const watchResume = watch("resume");
+  const watchActuationUf = watch("actuation_uf");
+
+  useEffect(() => {
+    if (watchActuationUf && watchActuationUf !== "selecione") {
+      setIsCityDisabled(false);
+      setLoadingCities(true);
+      getCitiesByUf(watchActuationUf)
+        .then((cities) => {
+          setLoadingCities(false);
+          setCities(cities);
+        })
+        .catch((err) => console.log(err));
+    } else {
+      setIsCityDisabled(true);
+    }
+  }, [watchActuationUf]);
 
   const isSpecializationProvided = () => {
     if (!hasClickedSubmit) return true;
@@ -77,6 +128,11 @@ const Professional = ({
     return !!watchCivel || !!watchFamilia || !!watchEmpresarial;
   };
 
+  const isActuationUnitProvided = () => {
+    if (!hasClickedSubmit) return true;
+    return units && units.length > 0;
+  };
+
   const submitStep = (data) => {
     const {
       certification,
@@ -86,6 +142,9 @@ const Professional = ({
       familia,
       empresarial,
       lattes,
+      resume,
+      actuation_city,
+      actuation_uf,
     } = data;
 
     if (!civel && !familia && !empresarial) {
@@ -93,7 +152,30 @@ const Professional = ({
       return;
     }
 
-    console.log(data);
+    let specialization = [];
+    if (civel) {
+      specialization.push("civel");
+    }
+    if (familia) {
+      specialization.push("familia");
+    }
+    if (empresarial) {
+      specialization.push("empresarial");
+    }
+
+    const professionalInfo = {
+      certification,
+      average_value,
+      attachment: attachment.length > 0 ? attachment[0] : null,
+      specialization,
+      lattes,
+      resume,
+      actuation_units: units,
+      actuation_city,
+      actuation_uf,
+    };
+    dispatch(submitProfessional(professionalInfo));
+    handleNext();
   };
 
   const validateCertification = (value) => {
@@ -104,12 +186,41 @@ const Professional = ({
     return ["voluntario", "$", "$$", "$$$"].includes(value);
   };
 
+  const enforceSelect = (value) => {
+    if (!value) return false;
+    return value !== "selecione";
+  };
+
+  const validateAttachment = (value) => {
+    if (value.length === 0) return true;
+    const file = value[0];
+    if (file.size > 5242880) {
+      return false;
+    }
+    const fileExtension = file.name.substring(file.name.length - 4);
+    const allowedExt = [
+      ".pdf",
+      ".doc",
+      ".docx",
+      "docx",
+      ".gif",
+      ".png",
+      ".jpg",
+    ];
+    if (!allowedExt.includes(fileExtension)) {
+      return false;
+    }
+    return true;
+  };
+
   const getErrorMessageLattes = (error) => {
     switch (error.type) {
       case "required":
         return "O link do seu currículo na plataforma lattes é obrigatório";
       case "validate":
         return "O link informado é inválido";
+      case "maxLength":
+        return "O link informado é longo demais (máx. 155 caractéres)";
       default:
         return "Campo inválido";
     }
@@ -117,14 +228,6 @@ const Professional = ({
 
   const deleteChip = (court) => {
     setUnits([...units].filter((unit) => unit !== court));
-  };
-
-  const handleUnitCombobox = ({ target }) => {
-    const selectedUnit = target.textContent;
-    if (courts.includes(selectedUnit) && !units.includes(selectedUnit)) {
-      setUnits([...units, selectedUnit]);
-      setInputUnit("");
-    }
   };
 
   return (
@@ -194,11 +297,13 @@ const Professional = ({
           variant="outlined"
           label="Anexo"
           InputLabelProps={{ shrink: true }}
+          inputProps={{ accept: ".pdf, .doc, .docx, .jpg, .gif, .png" }}
           name="attachment"
           id="attachment"
-          inputRef={register}
+          inputRef={register({ validate: validateAttachment })}
           helperText={
-            errors.attachment && "getErrorMessageLattes(errors.lattes)"
+            errors.attachment &&
+            "O anexo é muito grande ou a extensão não é permitida"
           }
           error={!!errors.attachment}
           style={{ minWidth: "100%" }}
@@ -229,7 +334,7 @@ const Professional = ({
           </FormControl>
         </FormGroup>
         {!isSpecializationProvided() && (
-          <FormHelperText error>
+          <FormHelperText error={true}>
             Selecione pelo menos uma especialidade
           </FormHelperText>
         )}
@@ -246,6 +351,7 @@ const Professional = ({
           inputRef={register({
             required: true,
             validate: (value) => isValidURL(value),
+            maxLength: 155,
           })}
           helperText={errors.lattes && getErrorMessageLattes(errors.lattes)}
           error={!!errors.lattes}
@@ -272,7 +378,6 @@ const Professional = ({
           variant="outlined"
           defaultValue={professional.resume}
           multiline
-          required
           inputRef={register({ maxLength: 240 })}
           helperText={
             errors.resume &&
@@ -282,7 +387,7 @@ const Professional = ({
           style={{ width: "100%" }}
           rows={4}
         />
-        <FormHelperText error={watchResume && watchResume.length > 240}>
+        <FormHelperText error={!!(watchResume && watchResume.length > 240)}>
           {(watchResume && watchResume.length) || 0} de 240
         </FormHelperText>
       </InputGroup>
@@ -292,24 +397,23 @@ const Professional = ({
           id="actuation_units_combobox"
           options={courts}
           getOptionLabel={(option) => option}
-          style={{ width: 300 }}
-          /* onChange={handleUnitCombobox}
+          style={{ width: "100%" }}
           inputValue={inputUnit}
-          onInputChange={(event, newInputValue) => {
-            setInputUnit(newInputValue);
-          }} */
-
-          value={inputUnit}
-          onChange={(event, newValue) => {
-            if (typeof newValue === "string") {
-              setInputUnit(newValue);
-            } else if (newValue && newValue.inputValue) {
-              // Create a new value from the user input
-              setInputUnit(newValue.inputValue);
-            } else {
-              setInputUnit(newValue);
+          onInputChange={(event, newValue) => {
+            const currentValue = event.target.textContent;
+            setInputUnit(newValue);
+            if (
+              courts.includes(currentValue) &&
+              !units.includes(currentValue)
+            ) {
+              setUnits([...units, currentValue]);
+              setSnackOpen(true);
+              setSnackMessage(
+                `${currentValue} adicionado à lista de unidades de atuação`
+              );
             }
           }}
+          onBlur={() => setInputUnit("")}
           selectOnFocus
           clearOnBlur
           handleHomeEndKeys
@@ -318,6 +422,11 @@ const Professional = ({
               {...params}
               label="Unidades de atuação"
               variant="outlined"
+              error={!isActuationUnitProvided()}
+              helperText={
+                !isActuationUnitProvided() &&
+                "Selecione pelo menos uma unidade de atuação"
+              }
             />
           )}
         />
@@ -328,7 +437,7 @@ const Professional = ({
                 <Chip
                   label={court}
                   onDelete={() => deleteChip(court)}
-                  style={{ margin: "0 .3rem" }}
+                  style={{ margin: ".1rem .3rem" }}
                   color="primary"
                 />
               </li>
@@ -336,6 +445,70 @@ const Professional = ({
           </ChipPaper>
         )}
       </InputGroup>
+
+      <InputGroup>
+        <Controller
+          control={control}
+          as={TextField}
+          id="uf"
+          name="actuation_uf"
+          select
+          label="UF de atuação"
+          defaultValue={professional.actuation_uf || "selecione"}
+          variant="outlined"
+          required
+          rules={{ required: true, validate: enforceSelect }}
+          helperText={
+            errors.actuation_uf && "Selecione uma unidade federativa válida"
+          }
+          error={!!errors.actuation_uf}
+          style={{ minWidth: "100%" }}
+        >
+          <MenuItem value="selecione">Selecione</MenuItem>
+          {states.length > 0 &&
+            states.map((state) => (
+              <MenuItem key={state.id} value={state.sigla}>
+                {state.nome}
+              </MenuItem>
+            ))}
+        </Controller>
+      </InputGroup>
+
+      {!loadingCities ? (
+        <InputGroup>
+          <Controller
+            control={control}
+            as={TextField}
+            id="city"
+            name="actuation_city"
+            select
+            label="Cidade de atuação"
+            defaultValue={professional.actuation_city || "selecione"}
+            variant="outlined"
+            required
+            rules={{ required: true, validate: enforceSelect }}
+            helperText={
+              errors.actuation_city && "Selecione uma cidade de atuação válida"
+            }
+            error={!!errors.actuation_city}
+            style={{ minWidth: "100%" }}
+            disabled={isCityDisabled}
+          >
+            <MenuItem value="selecione">Selecione</MenuItem>
+            {cities.length > 0 &&
+              cities.map((city) => (
+                <MenuItem key={city.id} value={city.nome}>
+                  {city.nome}
+                </MenuItem>
+              ))}
+          </Controller>
+        </InputGroup>
+      ) : (
+        <LoadingContainer>
+          <Spinner size={14} />
+          <span>carregando municípios</span>
+        </LoadingContainer>
+      )}
 
       <ActionGroup>
         <Button onClick={handleBack}>Voltar</Button>
@@ -348,6 +521,13 @@ const Professional = ({
           Próximo
         </Button>
       </ActionGroup>
+
+      <Snackbar
+        message={snackMessage}
+        severity={snackSeverity}
+        autoHideDuration={6000}
+        snackOpen={snackOpen}
+      />
     </Form>
   );
 };

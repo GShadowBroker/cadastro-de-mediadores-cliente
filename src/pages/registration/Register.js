@@ -12,6 +12,7 @@ import {
   Paper,
 } from "@material-ui/core";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import { useSelector } from "react-redux";
 
 import Step1 from "./Step1";
 import Step2 from "./Step2";
@@ -54,17 +55,14 @@ const getSteps = (type) => {
 };
 
 const Register = () => {
+  const accountType = useSelector(
+    (state) => state.registrationReducer.accountType
+  );
+
   const classes = useStyles();
-  const [activeStep, setActiveStep] = useState(2);
+  const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   // Form data
-  const [accountType, setAccountType] = useState("mediador");
-  const [personal, setPersonal] = useState({
-    cpf: "",
-    fullname: "",
-    sex: "",
-    birthday: "2000-01-01",
-  });
   const [professional, setProfessional] = useState({
     certification: "",
     average_value: "",
@@ -76,16 +74,6 @@ const Register = () => {
     actuation_city: "",
     actuation_uf: "",
   });
-  const [contact, setContact] = useState({
-    email: "",
-    alternative_email: "",
-    phone: "",
-    cellphone: "",
-  });
-  const [confirm, setConfirm] = useState({
-    password: "",
-    acceptTerms: false,
-  });
 
   const steps = getSteps(accountType);
 
@@ -93,24 +81,9 @@ const Register = () => {
     if (steps.length > 4) {
       switch (step) {
         case 0:
-          return (
-            <Step1
-              accountType={accountType}
-              setAccountType={setAccountType}
-              handleBack={handleBack}
-              handleNext={handleNext}
-            />
-          );
+          return <Step1 handleBack={handleBack} handleNext={handleNext} />;
         case 1:
-          return (
-            <Step2
-              handleNext={handleNext}
-              handleBack={handleBack}
-              personal={personal}
-              setPersonal={setPersonal}
-              accountType={accountType}
-            />
-          );
+          return <Step2 handleNext={handleNext} handleBack={handleBack} />;
         case 2:
           return (
             <Professional
@@ -121,67 +94,22 @@ const Register = () => {
             />
           );
         case 3:
-          return (
-            <Contact
-              handleNext={handleNext}
-              handleBack={handleBack}
-              contact={contact}
-              setContact={setContact}
-              accountType={accountType}
-            />
-          );
+          return <Contact handleNext={handleNext} handleBack={handleBack} />;
         case 4:
-          return (
-            <Finish
-              handleNext={handleNext}
-              handleBack={handleBack}
-              confirm={confirm}
-              setConfirm={setConfirm}
-            />
-          );
+          return <Finish handleNext={handleNext} handleBack={handleBack} />;
         default:
           return "Unknown step";
       }
     } else {
       switch (step) {
         case 0:
-          return (
-            <Step1
-              accountType={accountType}
-              setAccountType={setAccountType}
-              handleBack={handleBack}
-              handleNext={handleNext}
-            />
-          );
+          return <Step1 handleBack={handleBack} handleNext={handleNext} />;
         case 1:
-          return (
-            <Step2
-              handleNext={handleNext}
-              handleBack={handleBack}
-              personal={personal}
-              setPersonal={setPersonal}
-              accountType={accountType}
-            />
-          );
+          return <Step2 handleNext={handleNext} handleBack={handleBack} />;
         case 2:
-          return (
-            <Contact
-              handleNext={handleNext}
-              handleBack={handleBack}
-              contact={contact}
-              setContact={setContact}
-              accountType={accountType}
-            />
-          );
+          return <Contact handleNext={handleNext} handleBack={handleBack} />;
         case 3:
-          return (
-            <Finish
-              handleNext={handleNext}
-              handleBack={handleBack}
-              confirm={confirm}
-              setConfirm={setConfirm}
-            />
-          );
+          return <Finish handleNext={handleNext} handleBack={handleBack} />;
         default:
           return "Unknown step";
       }

@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { FormLabel, Button, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import { parse } from "telefone";
+import { useDispatch, useSelector } from "react-redux";
+import { submitContact } from "../../store/registrationReducer";
 
 const Form = styled.form`
   display: flex;
@@ -24,22 +26,23 @@ const InputGroup = styled.div`
   max-width: 100%;
 `;
 
-const Contact = ({
-  handleNext,
-  handleBack,
-  contact,
-  setContact,
-  accountType,
-}) => {
+const Contact = ({ handleNext, handleBack }) => {
+  const dispatch = useDispatch();
+  const contact = useSelector((state) => state.registrationReducer.contact);
+  const accountType = useSelector(
+    (state) => state.registrationReducer.accountType
+  );
+
   const { register, handleSubmit, errors } = useForm();
 
   const submitStep = (data) => {
     const { email } = data;
     if (!email) return;
 
-    setContact({
+    const contactInfo = {
       ...data,
-    });
+    };
+    dispatch(submitContact(contactInfo));
     handleNext();
   };
 

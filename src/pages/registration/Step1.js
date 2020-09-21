@@ -8,6 +8,8 @@ import {
   Radio,
   Button,
 } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import { submitAccountType } from "../../store/registrationReducer";
 
 const LabelControl = styled(FormControlLabel)`
   margin: 0.6rem 0;
@@ -40,10 +42,16 @@ const ActionGroup = styled.div`
   justify-content: flex-end;
 `;
 
-const Step1 = ({ accountType, setAccountType, handleNext }) => {
+const Step1 = ({ handleNext }) => {
+  const dispatch = useDispatch();
+  const accountType = useSelector(
+    (state) => state.registrationReducer.accountType
+  );
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!accountType) return;
+    dispatch(submitAccountType(accountType));
     handleNext();
   };
   return (
@@ -54,7 +62,7 @@ const Step1 = ({ accountType, setAccountType, handleNext }) => {
           aria-label="tipo_de_cadastro"
           name="cadastro"
           value={accountType}
-          onChange={(e) => setAccountType(e.target.value)}
+          onChange={(e) => dispatch(submitAccountType(e.target.value))}
           style={{ minWidth: "100%" }}
         >
           <LabelControl
