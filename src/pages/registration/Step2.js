@@ -1,6 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { FormLabel, Button, TextField, MenuItem } from "@material-ui/core";
+import {
+  FormLabel,
+  Button,
+  TextField,
+  MenuItem,
+  Fade,
+} from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 import { cpf } from "cpf-cnpj-validator";
 import { useDispatch, useSelector } from "react-redux";
@@ -82,99 +88,106 @@ const Step1 = ({ handleNext, handleBack }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(submitStep)} noValidate>
-      <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
-        Dados pessoais do {accountType === "mediador" ? "mediador" : "usuário"}
-      </FormLabel>
-      <InputGroup>
-        <TextField
-          id="cpf"
-          name="cpf"
-          label="CPF"
-          type="text"
-          variant="outlined"
-          defaultValue={personal.cpf}
-          required
-          inputRef={register({
-            required: true,
-            validate: (value) => cpf.isValid(value),
-            maxLength: 15,
-          })}
-          helperText={errors.cpf && getErrorMessageCpf(errors.cpf)}
-          error={!!errors.cpf}
-          style={{ minWidth: "100%" }}
-        />
-      </InputGroup>
-      <InputGroup>
-        <TextField
-          id="fullname"
-          name="fullname"
-          label="Nome completo"
-          type="text"
-          variant="outlined"
-          defaultValue={personal.fullname}
-          required
-          inputRef={register({ required: true, maxLength: 150, minLength: 4 })}
-          helperText={errors.fullname && getErrorMessageName(errors.fullname)}
-          error={!!errors.fullname}
-          style={{ minWidth: "100%" }}
-        />
-      </InputGroup>
+    <Fade in={true}>
+      <Form onSubmit={handleSubmit(submitStep)} noValidate>
+        <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
+          Dados pessoais do{" "}
+          {accountType === "mediador" ? "mediador" : "usuário"}
+        </FormLabel>
+        <InputGroup>
+          <TextField
+            id="cpf"
+            name="cpf"
+            label="CPF"
+            type="text"
+            variant="outlined"
+            defaultValue={personal.cpf}
+            required
+            inputRef={register({
+              required: true,
+              validate: (value) => cpf.isValid(value),
+              maxLength: 15,
+            })}
+            helperText={errors.cpf && getErrorMessageCpf(errors.cpf)}
+            error={!!errors.cpf}
+            style={{ minWidth: "100%" }}
+          />
+        </InputGroup>
+        <InputGroup>
+          <TextField
+            id="fullname"
+            name="fullname"
+            label="Nome completo"
+            type="text"
+            variant="outlined"
+            defaultValue={personal.fullname}
+            required
+            inputRef={register({
+              required: true,
+              maxLength: 150,
+              minLength: 4,
+            })}
+            helperText={errors.fullname && getErrorMessageName(errors.fullname)}
+            error={!!errors.fullname}
+            style={{ minWidth: "100%" }}
+          />
+        </InputGroup>
 
-      <InputGroup>
-        <Controller
-          control={control}
-          as={TextField}
-          id="sex"
-          name="sex"
-          select
-          label="Sexo"
-          defaultValue={personal.sex || "selecione"}
-          variant="outlined"
-          required
-          rules={{ required: true, validate: validateSex }}
-          helperText={errors.sex && "O sexo é obrigatório"}
-          error={!!errors.sex}
-          style={{ minWidth: "100%" }}
-        >
-          <MenuItem value="selecione">Selecione</MenuItem>
-          <MenuItem value="feminino">Feminino</MenuItem>
-          <MenuItem value="masculino">Masculino</MenuItem>
-        </Controller>
-      </InputGroup>
-      <InputGroup>
-        <TextField
-          id="birthday"
-          name="birthday"
-          label="Data de nascimeto"
-          type="date"
-          defaultValue={personal.birthday}
-          variant="outlined"
-          required
-          InputLabelProps={{
-            shrink: true,
-          }}
-          inputRef={register({ required: true, validate: validateBirthdate })}
-          helperText={
-            errors.birthday && "Data de nascimento inválida ou inverossímil"
-          }
-          error={!!errors.birthday}
-          style={{ minWidth: "100%" }}
-        />
-      </InputGroup>
+        <InputGroup>
+          <Controller
+            control={control}
+            as={TextField}
+            id="sex"
+            name="sex"
+            select
+            label="Sexo"
+            defaultValue={personal.sex || "selecione"}
+            variant="outlined"
+            required
+            rules={{ required: true, validate: validateSex }}
+            helperText={errors.sex && "O sexo é obrigatório"}
+            error={!!errors.sex}
+            style={{ minWidth: "100%" }}
+          >
+            <MenuItem value="selecione">Selecione</MenuItem>
+            <MenuItem value="feminino">Feminino</MenuItem>
+            <MenuItem value="masculino">Masculino</MenuItem>
+          </Controller>
+        </InputGroup>
+        <InputGroup>
+          <TextField
+            id="birthday"
+            name="birthday"
+            label="Data de nascimeto"
+            type="date"
+            defaultValue={personal.birthday}
+            variant="outlined"
+            required
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputRef={register({ required: true, validate: validateBirthdate })}
+            helperText={
+              errors.birthday && "Data de nascimento inválida ou inverossímil"
+            }
+            error={!!errors.birthday}
+            style={{ minWidth: "100%" }}
+          />
+        </InputGroup>
 
-      <ActionGroup>
-        <Button onClick={handleBack}>Voltar</Button>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          style={{ marginLeft: "1.5rem" }}
-        >
-          Próximo
-        </Button>
-      </ActionGroup>
-    </Form>
+        <ActionGroup>
+          <Button onClick={handleBack}>Voltar</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            style={{ marginLeft: "1.5rem" }}
+          >
+            Próximo
+          </Button>
+        </ActionGroup>
+      </Form>
+    </Fade>
   );
 };
 

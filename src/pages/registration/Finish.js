@@ -8,6 +8,7 @@ import {
   IconButton,
   FormControlLabel,
   Checkbox,
+  Fade,
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { useForm } from "react-hook-form";
@@ -73,74 +74,76 @@ const Finish = ({ handleNext, handleBack }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(submitStep)} noValidate>
-      <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
-        Finalizando o cadastro
-      </FormLabel>
-      <InputGroup>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          autoComplete="username"
-          defaultValue="a_b"
-          style={{ display: "none" }}
-        />
-        <TextField
-          id="password"
-          name="password"
-          autoComplete="new-password"
-          label="Senha"
-          type={showPassword ? "text" : "password"}
-          variant="outlined"
-          defaultValue={confirm.password}
-          required
-          inputRef={register({
-            required: true,
-            maxLength: 55,
-            minLength: 6,
-            validate: validatePassword,
-          })}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          helperText={
-            errors.password && getErrorMessagePassword(errors.password)
-          }
-          error={!!errors.password}
-          style={{ minWidth: "100%" }}
-        />
-      </InputGroup>
-      <InputGroup>
-        <FormControlLabel
-          control={<Checkbox name="acceptTerms" color="primary" required />}
-          label="Li e aceito os Termos e Condições e as Políticas de Privacidade."
-          inputRef={register}
-        />
-      </InputGroup>
+    <Fade in={true}>
+      <Form onSubmit={handleSubmit(submitStep)} noValidate>
+        <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
+          Finalizando o cadastro
+        </FormLabel>
+        <InputGroup>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            autoComplete="username"
+            defaultValue="a_b"
+            style={{ display: "none" }}
+          />
+          <TextField
+            id="password"
+            name="password"
+            autoComplete="new-password"
+            label="Senha"
+            type={showPassword ? "text" : "password"}
+            variant="outlined"
+            defaultValue={confirm.password}
+            required
+            inputRef={register({
+              required: true,
+              maxLength: 55,
+              minLength: 6,
+              validate: validatePassword,
+            })}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            helperText={
+              errors.password && getErrorMessagePassword(errors.password)
+            }
+            error={!!errors.password}
+            style={{ minWidth: "100%" }}
+          />
+        </InputGroup>
+        <InputGroup>
+          <FormControlLabel
+            control={<Checkbox name="acceptTerms" color="primary" required />}
+            label="Li e aceito os Termos e Condições e as Políticas de Privacidade."
+            inputRef={register}
+          />
+        </InputGroup>
 
-      <ActionGroup>
-        <Button onClick={handleBack}>Voltar</Button>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          style={{ marginLeft: "1.5rem" }}
-          disabled={!watchAccept}
-        >
-          Concluir e salvar
-        </Button>
-      </ActionGroup>
-    </Form>
+        <ActionGroup>
+          <Button onClick={handleBack}>Voltar</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            style={{ marginLeft: "1.5rem" }}
+            disabled={!watchAccept}
+          >
+            Concluir e salvar
+          </Button>
+        </ActionGroup>
+      </Form>
+    </Fade>
   );
 };
 

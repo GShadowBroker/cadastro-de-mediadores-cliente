@@ -12,6 +12,7 @@ import {
   FormControl,
   Chip,
   Paper,
+  Fade,
 } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { useForm, Controller } from "react-hook-form";
@@ -231,304 +232,307 @@ const Professional = ({ handleNext, handleBack }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(submitStep)} noValidate>
-      <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
-        Dados profissionais do mediador
-      </FormLabel>
-      <InputGroup>
-        <Controller
-          control={control}
-          as={TextField}
-          id="certification"
-          name="certification"
-          select
-          label="Certificação"
-          defaultValue={professional.certification || "selecione"}
-          variant="outlined"
-          required
-          rules={{ required: true, validate: validateCertification }}
-          helperText={
-            errors.certification &&
-            "Selecione se possui uma certificação ou está em formação"
-          }
-          error={!!errors.certification}
-          style={{ minWidth: "100%" }}
-        >
-          <MenuItem value="selecione">Selecione</MenuItem>
-          <MenuItem value="certificado">Certificado</MenuItem>
-          <MenuItem value="em_formacao">Em formação</MenuItem>
-        </Controller>
-      </InputGroup>
-
-      {watchCertification &&
-        watchCertification !== "selecione" &&
-        watchCertification !== "em_formacao" && (
-          <InputGroup>
-            <Controller
-              control={control}
-              as={TextField}
-              id="average_value"
-              name="average_value"
-              select
-              label="Valor médio"
-              defaultValue={professional.average_value || "selecione"}
-              variant="outlined"
-              required
-              rules={{ required: true, validate: validateAverageValue }}
-              helperText={
-                errors.average_value &&
-                "Selecione o patamar do valor médio cobrado"
-              }
-              error={!!errors.average_value}
-              style={{ minWidth: "100%" }}
-            >
-              <MenuItem value="selecione">Selecione</MenuItem>
-              <MenuItem value="voluntario">Voluntário</MenuItem>
-              <MenuItem value="$">Básico</MenuItem>
-              <MenuItem value="$$">Médio</MenuItem>
-              <MenuItem value="$$$">Alto</MenuItem>
-            </Controller>
-          </InputGroup>
-        )}
-
-      <InputGroup>
-        <TextField
-          type="file"
-          variant="outlined"
-          label="Anexo"
-          InputLabelProps={{ shrink: true }}
-          inputProps={{ accept: ".pdf, .doc, .docx, .jpg, .gif, .png" }}
-          name="attachment"
-          id="attachment"
-          inputRef={register({ validate: validateAttachment })}
-          helperText={
-            errors.attachment &&
-            "O anexo é muito grande ou a extensão não é permitida"
-          }
-          error={!!errors.attachment}
-          style={{ minWidth: "100%" }}
-        />
-        <FormHelperText>
-          Extensões permitidas: .pdf, .doc, .docx, .jpg, .gif, .png. Até 5 MB.
-        </FormHelperText>
-      </InputGroup>
-      <InputGroup>
-        <FormGroup>
-          <FormControl error={!isSpecializationProvided()} required>
-            <FormLabel component="legend">Especialidades</FormLabel>
-            <FormControlLabel
-              control={<Checkbox name="civel" color="primary" />}
-              label="Cível"
-              inputRef={register}
-            />
-            <FormControlLabel
-              control={<Checkbox name="familia" color="primary" />}
-              label="Família"
-              inputRef={register}
-            />
-            <FormControlLabel
-              control={<Checkbox name="empresarial" color="primary" />}
-              label="Empresarial"
-              inputRef={register}
-            />
-          </FormControl>
-        </FormGroup>
-        {!isSpecializationProvided() && (
-          <FormHelperText error={true}>
-            Selecione pelo menos uma especialidade
-          </FormHelperText>
-        )}
-      </InputGroup>
-      <InputGroup>
-        <TextField
-          id="lattes"
-          name="lattes"
-          label="Currículo lattes"
-          type="text"
-          variant="outlined"
-          defaultValue={professional.lattes}
-          required
-          inputRef={register({
-            required: true,
-            validate: (value) => isValidURL(value),
-            maxLength: 155,
-          })}
-          helperText={errors.lattes && getErrorMessageLattes(errors.lattes)}
-          error={!!errors.lattes}
-          style={{ minWidth: "100%" }}
-        />
-        <FormHelperText>
-          Link do seu currículo na{" "}
-          <a
-            href="http://lattes.cnpq.br/"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            plataforma lattes
-          </a>
-        </FormHelperText>
-      </InputGroup>
-
-      <InputGroup>
-        <TextField
-          id="resume"
-          name="resume"
-          label="Minicurrículo"
-          type="text"
-          variant="outlined"
-          defaultValue={professional.resume}
-          multiline
-          inputRef={register({ maxLength: 240 })}
-          helperText={
-            errors.resume &&
-            "O minicurrículo deve conter no máximo 240 caractéres"
-          }
-          error={!!errors.resume}
-          style={{ width: "100%" }}
-          rows={4}
-        />
-        <FormHelperText error={!!(watchResume && watchResume.length > 240)}>
-          {(watchResume && watchResume.length) || 0} de 240
-        </FormHelperText>
-      </InputGroup>
-
-      <InputGroup>
-        <Autocomplete
-          id="actuation_units_combobox"
-          options={courts}
-          getOptionLabel={(option) => option}
-          style={{ width: "100%" }}
-          inputValue={inputUnit}
-          onInputChange={(event, newValue) => {
-            const currentValue = event.target.textContent;
-            setInputUnit(newValue);
-            if (
-              courts.includes(currentValue) &&
-              !units.includes(currentValue)
-            ) {
-              setUnits([...units, currentValue]);
-              setSnackOpen(true);
-              setSnackMessage(
-                `${currentValue} adicionado à lista de unidades de atuação`
-              );
-            }
-          }}
-          onBlur={() => setInputUnit("")}
-          selectOnFocus
-          clearOnBlur
-          handleHomeEndKeys
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Unidades de atuação"
-              variant="outlined"
-              error={!isActuationUnitProvided()}
-              helperText={
-                !isActuationUnitProvided() &&
-                "Selecione pelo menos uma unidade de atuação"
-              }
-            />
-          )}
-        />
-        {units.length > 0 && (
-          <ChipPaper component="ul">
-            {units.map((court) => (
-              <li key={court}>
-                <Chip
-                  label={court}
-                  onDelete={() => deleteChip(court)}
-                  style={{ margin: ".1rem .3rem" }}
-                  color="primary"
-                />
-              </li>
-            ))}
-          </ChipPaper>
-        )}
-      </InputGroup>
-
-      <InputGroup>
-        <Controller
-          control={control}
-          as={TextField}
-          id="uf"
-          name="actuation_uf"
-          select
-          label="UF de atuação"
-          defaultValue={professional.actuation_uf || "selecione"}
-          variant="outlined"
-          required
-          rules={{ required: true, validate: enforceSelect }}
-          helperText={
-            errors.actuation_uf && "Selecione uma unidade federativa válida"
-          }
-          error={!!errors.actuation_uf}
-          style={{ minWidth: "100%" }}
-        >
-          <MenuItem value="selecione">Selecione</MenuItem>
-          {states.length > 0 &&
-            states.map((state) => (
-              <MenuItem key={state.id} value={state.sigla}>
-                {state.nome}
-              </MenuItem>
-            ))}
-        </Controller>
-      </InputGroup>
-
-      {!loadingCities ? (
+    <Fade in={true}>
+      <Form onSubmit={handleSubmit(submitStep)} noValidate>
+        <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
+          Dados profissionais do mediador
+        </FormLabel>
         <InputGroup>
           <Controller
             control={control}
             as={TextField}
-            id="city"
-            name="actuation_city"
+            id="certification"
+            name="certification"
             select
-            label="Cidade de atuação"
-            defaultValue={professional.actuation_city || "selecione"}
+            label="Certificação"
+            defaultValue={professional.certification || "selecione"}
+            variant="outlined"
+            required
+            rules={{ required: true, validate: validateCertification }}
+            helperText={
+              errors.certification &&
+              "Selecione se possui uma certificação ou está em formação"
+            }
+            error={!!errors.certification}
+            style={{ minWidth: "100%" }}
+          >
+            <MenuItem value="selecione">Selecione</MenuItem>
+            <MenuItem value="certificado">Certificado</MenuItem>
+            <MenuItem value="em_formacao">Em formação</MenuItem>
+          </Controller>
+        </InputGroup>
+
+        {watchCertification &&
+          watchCertification !== "selecione" &&
+          watchCertification !== "em_formacao" && (
+            <InputGroup>
+              <Controller
+                control={control}
+                as={TextField}
+                id="average_value"
+                name="average_value"
+                select
+                label="Valor médio"
+                defaultValue={professional.average_value || "selecione"}
+                variant="outlined"
+                required
+                rules={{ required: true, validate: validateAverageValue }}
+                helperText={
+                  errors.average_value &&
+                  "Selecione o patamar do valor médio cobrado"
+                }
+                error={!!errors.average_value}
+                style={{ minWidth: "100%" }}
+              >
+                <MenuItem value="selecione">Selecione</MenuItem>
+                <MenuItem value="voluntario">Voluntário</MenuItem>
+                <MenuItem value="$">Básico</MenuItem>
+                <MenuItem value="$$">Médio</MenuItem>
+                <MenuItem value="$$$">Alto</MenuItem>
+              </Controller>
+            </InputGroup>
+          )}
+
+        <InputGroup>
+          <TextField
+            type="file"
+            variant="outlined"
+            label="Anexo"
+            InputLabelProps={{ shrink: true }}
+            inputProps={{ accept: ".pdf, .doc, .docx, .jpg, .gif, .png" }}
+            name="attachment"
+            id="attachment"
+            inputRef={register({ validate: validateAttachment })}
+            helperText={
+              errors.attachment &&
+              "O anexo é muito grande ou a extensão não é permitida"
+            }
+            error={!!errors.attachment}
+            style={{ minWidth: "100%" }}
+          />
+          <FormHelperText>
+            Extensões permitidas: .pdf, .doc, .docx, .jpg, .gif, .png. Até 5 MB.
+          </FormHelperText>
+        </InputGroup>
+        <InputGroup>
+          <FormGroup>
+            <FormControl error={!isSpecializationProvided()} required>
+              <FormLabel component="legend">Especialidades</FormLabel>
+              <FormControlLabel
+                control={<Checkbox name="civel" color="primary" />}
+                label="Cível"
+                inputRef={register}
+              />
+              <FormControlLabel
+                control={<Checkbox name="familia" color="primary" />}
+                label="Família"
+                inputRef={register}
+              />
+              <FormControlLabel
+                control={<Checkbox name="empresarial" color="primary" />}
+                label="Empresarial"
+                inputRef={register}
+              />
+            </FormControl>
+          </FormGroup>
+          {!isSpecializationProvided() && (
+            <FormHelperText error={true}>
+              Selecione pelo menos uma especialidade
+            </FormHelperText>
+          )}
+        </InputGroup>
+        <InputGroup>
+          <TextField
+            id="lattes"
+            name="lattes"
+            label="Currículo lattes"
+            type="text"
+            variant="outlined"
+            defaultValue={professional.lattes}
+            required
+            inputRef={register({
+              required: true,
+              validate: (value) => isValidURL(value),
+              maxLength: 155,
+            })}
+            helperText={errors.lattes && getErrorMessageLattes(errors.lattes)}
+            error={!!errors.lattes}
+            style={{ minWidth: "100%" }}
+          />
+          <FormHelperText>
+            Link do seu currículo na{" "}
+            <a
+              href="http://lattes.cnpq.br/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              plataforma lattes
+            </a>
+          </FormHelperText>
+        </InputGroup>
+
+        <InputGroup>
+          <TextField
+            id="resume"
+            name="resume"
+            label="Minicurrículo"
+            type="text"
+            variant="outlined"
+            defaultValue={professional.resume}
+            multiline
+            inputRef={register({ maxLength: 240 })}
+            helperText={
+              errors.resume &&
+              "O minicurrículo deve conter no máximo 240 caractéres"
+            }
+            error={!!errors.resume}
+            style={{ width: "100%" }}
+            rows={4}
+          />
+          <FormHelperText error={!!(watchResume && watchResume.length > 240)}>
+            {(watchResume && watchResume.length) || 0} de 240
+          </FormHelperText>
+        </InputGroup>
+
+        <InputGroup>
+          <Autocomplete
+            id="actuation_units_combobox"
+            options={courts}
+            getOptionLabel={(option) => option}
+            style={{ width: "100%" }}
+            inputValue={inputUnit}
+            onInputChange={(event, newValue) => {
+              const currentValue = event.target.textContent;
+              setInputUnit(newValue);
+              if (
+                courts.includes(currentValue) &&
+                !units.includes(currentValue)
+              ) {
+                setUnits([...units, currentValue]);
+                setSnackOpen(true);
+                setSnackMessage(
+                  `${currentValue} adicionado à lista de unidades de atuação`
+                );
+              }
+            }}
+            onBlur={() => setInputUnit("")}
+            selectOnFocus
+            clearOnBlur
+            handleHomeEndKeys
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Unidades de atuação"
+                variant="outlined"
+                error={!isActuationUnitProvided()}
+                helperText={
+                  !isActuationUnitProvided() &&
+                  "Selecione pelo menos uma unidade de atuação"
+                }
+              />
+            )}
+          />
+          {units.length > 0 && (
+            <ChipPaper component="ul">
+              {units.map((court) => (
+                <li key={court}>
+                  <Chip
+                    label={court}
+                    onDelete={() => deleteChip(court)}
+                    style={{ margin: ".1rem .3rem" }}
+                    color="primary"
+                  />
+                </li>
+              ))}
+            </ChipPaper>
+          )}
+        </InputGroup>
+
+        <InputGroup>
+          <Controller
+            control={control}
+            as={TextField}
+            id="uf"
+            name="actuation_uf"
+            select
+            label="UF de atuação"
+            defaultValue={professional.actuation_uf || "selecione"}
             variant="outlined"
             required
             rules={{ required: true, validate: enforceSelect }}
             helperText={
-              errors.actuation_city && "Selecione uma cidade de atuação válida"
+              errors.actuation_uf && "Selecione uma unidade federativa válida"
             }
-            error={!!errors.actuation_city}
+            error={!!errors.actuation_uf}
             style={{ minWidth: "100%" }}
-            disabled={isCityDisabled}
           >
             <MenuItem value="selecione">Selecione</MenuItem>
-            {cities.length > 0 &&
-              cities.map((city) => (
-                <MenuItem key={city.id} value={city.nome}>
-                  {city.nome}
+            {states.length > 0 &&
+              states.map((state) => (
+                <MenuItem key={state.id} value={state.sigla}>
+                  {state.nome}
                 </MenuItem>
               ))}
           </Controller>
         </InputGroup>
-      ) : (
-        <LoadingContainer>
-          <Spinner size={14} />
-          <span>carregando municípios</span>
-        </LoadingContainer>
-      )}
 
-      <ActionGroup>
-        <Button onClick={handleBack}>Voltar</Button>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          style={{ marginLeft: "1.5rem" }}
-        >
-          Próximo
-        </Button>
-      </ActionGroup>
+        {!loadingCities ? (
+          <InputGroup>
+            <Controller
+              control={control}
+              as={TextField}
+              id="city"
+              name="actuation_city"
+              select
+              label="Cidade de atuação"
+              defaultValue={professional.actuation_city || "selecione"}
+              variant="outlined"
+              required
+              rules={{ required: true, validate: enforceSelect }}
+              helperText={
+                errors.actuation_city &&
+                "Selecione uma cidade de atuação válida"
+              }
+              error={!!errors.actuation_city}
+              style={{ minWidth: "100%" }}
+              disabled={isCityDisabled}
+            >
+              <MenuItem value="selecione">Selecione</MenuItem>
+              {cities.length > 0 &&
+                cities.map((city) => (
+                  <MenuItem key={city.id} value={city.nome}>
+                    {city.nome}
+                  </MenuItem>
+                ))}
+            </Controller>
+          </InputGroup>
+        ) : (
+          <LoadingContainer>
+            <Spinner size={14} />
+            <span>carregando municípios</span>
+          </LoadingContainer>
+        )}
 
-      <Snackbar
-        message={snackMessage}
-        severity={snackSeverity}
-        autoHideDuration={6000}
-        snackOpen={snackOpen}
-      />
-    </Form>
+        <ActionGroup>
+          <Button onClick={handleBack}>Voltar</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            style={{ marginLeft: "1.5rem" }}
+          >
+            Próximo
+          </Button>
+        </ActionGroup>
+
+        <Snackbar
+          message={snackMessage}
+          severity={snackSeverity}
+          autoHideDuration={6000}
+          snackOpen={snackOpen}
+        />
+      </Form>
+    </Fade>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -10,6 +10,7 @@ import {
   Container,
   Card,
   Paper,
+  Fade,
 } from "@material-ui/core";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import { useSelector } from "react-redux";
@@ -19,6 +20,7 @@ import Step2 from "./Step2";
 import Professional from "./Professional";
 import Contact from "./Contact";
 import Finish from "./Finish";
+import Footer from "../../components/Footer";
 
 const FormContainer = styled(Card)`
   padding: 25px;
@@ -62,7 +64,13 @@ const Register = () => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
-  // Form data
+  const [stepperOrientation, setStepperOrientation] = useState("horizontal");
+
+  useEffect(() => {
+    if (window.innerWidth < 500) {
+      setStepperOrientation("vertical");
+    }
+  }, []);
 
   const steps = getSteps(accountType);
 
@@ -120,48 +128,56 @@ const Register = () => {
   };
 
   return (
-    <Container maxWidth="md" style={{ margin: "2rem auto" }}>
-      <Paper>
-        <Stepper activeStep={activeStep}>
-          {steps.map((label, index) => {
-            return (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
-        <FormContainer>
-          {activeStep === steps.length ? (
-            <div>
-              <Typography
-                variant="h5"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "1rem",
-                }}
-              >
-                <MailOutlineIcon />{" "}
-                <span style={{ marginLeft: 5 }}>Confirme sua conta</span>
-              </Typography>
-              <Typography className={classes.instructions}>
-                Enviamos um e-mail de confirmação para você. No corpo da
-                mensagem, clique no link enviado para validar a sua conta. Se
-                não encontrar o e-mail, verifique sua caixa de spam/lixo
-                eletrônico.
-              </Typography>
-            </div>
-          ) : (
-            <div>
-              <div className={classes.instructions}>
-                {getStepContent(activeStep)}
+    <Fade in={true}>
+      <Container maxWidth="md" style={{ margin: "2rem auto" }}>
+        <Paper style={{ marginBottom: "1rem" }}>
+          <Stepper
+            activeStep={activeStep}
+            orientation={stepperOrientation}
+            alternativeLabel={stepperOrientation === "horizontal"}
+          >
+            {steps.map((label, index) => {
+              return (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              );
+            })}
+          </Stepper>
+          <FormContainer>
+            {activeStep === steps.length ? (
+              <Fade in={true}>
+                <div>
+                  <Typography
+                    variant="h5"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    <MailOutlineIcon />{" "}
+                    <span style={{ marginLeft: 5 }}>Confirme sua conta</span>
+                  </Typography>
+                  <Typography className={classes.instructions}>
+                    Enviamos um e-mail de confirmação para você. Na mensagem,
+                    clique no link para validar a sua conta. Se não encontrar o
+                    e-mail, verifique sua caixa de spam/lixo eletrônico.
+                  </Typography>
+                </div>
+              </Fade>
+            ) : (
+              <div>
+                <div className={classes.instructions}>
+                  {getStepContent(activeStep)}
+                </div>
               </div>
-            </div>
-          )}
-        </FormContainer>
-      </Paper>
-    </Container>
+            )}
+          </FormContainer>
+        </Paper>
+        <Footer />
+      </Container>
+    </Fade>
   );
 };
 

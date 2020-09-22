@@ -4,6 +4,7 @@ import colors from "../../constants/colors";
 import LoginForm from "../../components/authentication/LoginForm";
 import { Link } from "react-router-dom";
 import { Button } from "@material-ui/core";
+import Footer from "../../components/Footer";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -29,41 +30,12 @@ const LoginCard = styled.div`
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   border-radius: 5px;
   height: 500px;
-  width: 100%;
+  width: 98%;
   display: flex;
   background: ${colors.light.background};
-`;
 
-const FooterContainer = styled.div`
-  height: 80px;
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-`;
-const FooterMenu = styled.ul`
-  margin: 0;
-  padding: 0;
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-
-  li {
-    display: inline;
-    font-size: 0.9em;
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-  li:not(:first-of-type) {
-    margin-left: 2rem;
+  @media only screen and (max-width: 1000px) {
+    margin: auto;
   }
 `;
 
@@ -76,6 +48,10 @@ const ImageContainer = styled.div`
   height: 100%;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+
+  @media only screen and (max-width: 1000px) {
+    display: none;
+  }
 `;
 
 const Filter = styled.div`
@@ -92,6 +68,19 @@ const FormContainer = styled.div`
 
   padding: 2rem 7rem 0 7rem;
   font-size: 0.9em;
+
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
+    padding: 2rem 10rem 0 10rem;
+  }
+  @media only screen and (max-width: 550px) {
+    width: 100%;
+    padding: 2rem 5rem 0 5rem;
+  }
+  @media only screen and (max-width: 400px) {
+    width: 100%;
+    padding: 2rem 1.5rem 0 1.5rem;
+  }
 `;
 
 const Header = styled.h1`
@@ -150,22 +139,7 @@ const Login = ({ handleLogin, loading }) => {
           </FormContainer>
         </LoginCard>
 
-        <FooterContainer>
-          <FooterMenu>
-            <li>
-              <a href="/">Página Inicial</a>
-            </li>
-            <li>
-              <a href="/">Sobre Nós</a>
-            </li>
-            <li>
-              <a href="/">Termos e Condições</a>
-            </li>
-            <li>
-              <a href="/">Política de Privacidade</a>
-            </li>
-          </FooterMenu>
-        </FooterContainer>
+        <Footer />
       </Container>
     </Wrapper>
   );

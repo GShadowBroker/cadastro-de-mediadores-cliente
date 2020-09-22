@@ -7,6 +7,7 @@ import {
   FormControlLabel,
   Radio,
   Button,
+  Fade,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { submitAccountType } from "../../store/registrationReducer";
@@ -55,41 +56,43 @@ const Step1 = ({ handleNext }) => {
     handleNext();
   };
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Como deseja se cadastrar?</FormLabel>
-        <RadioGroup
-          aria-label="tipo_de_cadastro"
-          name="cadastro"
-          value={accountType}
-          onChange={(e) => dispatch(submitAccountType(e.target.value))}
-          style={{ minWidth: "100%" }}
-        >
-          <LabelControl
-            value="usuario"
-            control={<Radio color="primary" />}
-            label="Usuário"
-          />
-          <LabelControl
-            value="mediador"
-            control={<Radio color="primary" />}
-            label="Mediador"
-          />
-        </RadioGroup>
-      </FormControl>
-      <ActionGroup>
-        <Button disabled>Voltar</Button>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          onClick={handleSubmit}
-          style={{ marginLeft: "1.5rem" }}
-        >
-          Próximo
-        </Button>
-      </ActionGroup>
-    </Form>
+    <Fade in={true}>
+      <Form onSubmit={handleSubmit}>
+        <FormControl component="fieldset">
+          <FormLabel component="legend">Como deseja se cadastrar?</FormLabel>
+          <RadioGroup
+            aria-label="tipo_de_cadastro"
+            name="cadastro"
+            value={accountType}
+            onChange={(e) => dispatch(submitAccountType(e.target.value))}
+            style={{ minWidth: "100%" }}
+          >
+            <LabelControl
+              value="usuario"
+              control={<Radio color="primary" />}
+              label="Usuário"
+            />
+            <LabelControl
+              value="mediador"
+              control={<Radio color="primary" />}
+              label="Mediador"
+            />
+          </RadioGroup>
+        </FormControl>
+        <ActionGroup>
+          <Button disabled>Voltar</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            onClick={handleSubmit}
+            style={{ marginLeft: "1.5rem" }}
+          >
+            Próximo
+          </Button>
+        </ActionGroup>
+      </Form>
+    </Fade>
   );
 };
 
