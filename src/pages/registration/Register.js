@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 
 import Step1 from "./Step1";
 import Step2 from "./Step2";
+import Camara from "./Camara";
 import Professional from "./Professional";
 import Contact from "./Contact";
 import Finish from "./Finish";
@@ -45,15 +46,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const getSteps = (type) => {
-  return type === "mediador"
-    ? [
+  switch (type) {
+    case "mediador":
+      return [
         "Tipo de conta",
         "Dados pessoais",
         "Dados profissionais",
         "Contato",
         "Finalizar",
-      ]
-    : ["Tipo de conta", "Dados pessoais", "Contato", "Finalizar"];
+      ];
+    case "camara":
+      return ["Tipo de conta", "Dados da câmara", "Contato", "Finalizar"];
+    case "nupemec":
+      return ["Tipo de conta", "Dados pessoais", "Contato", "Finalizar"];
+    default:
+      return [
+        "Tipo de conta",
+        "Dados pessoais",
+        "Dados profissionais",
+        "Contato",
+        "Finalizar",
+      ];
+  }
 };
 
 const Register = () => {
@@ -75,7 +89,7 @@ const Register = () => {
   const steps = getSteps(accountType);
 
   const getStepContent = (step) => {
-    if (steps.length > 4) {
+    if (accountType === "mediador") {
       switch (step) {
         case 0:
           return <Step1 handleBack={handleBack} handleNext={handleNext} />;
@@ -88,6 +102,19 @@ const Register = () => {
         case 3:
           return <Contact handleNext={handleNext} handleBack={handleBack} />;
         case 4:
+          return <Finish handleNext={handleNext} handleBack={handleBack} />;
+        default:
+          return "Unknown step";
+      }
+    } else if (accountType === "camara") {
+      switch (step) {
+        case 0:
+          return <Step1 handleBack={handleBack} handleNext={handleNext} />;
+        case 1:
+          return <Camara handleNext={handleNext} handleBack={handleBack} />;
+        case 2:
+          return <Contact handleNext={handleNext} handleBack={handleBack} />;
+        case 3:
           return <Finish handleNext={handleNext} handleBack={handleBack} />;
         default:
           return "Unknown step";

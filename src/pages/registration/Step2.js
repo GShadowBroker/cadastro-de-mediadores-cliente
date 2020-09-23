@@ -35,9 +35,6 @@ const InputGroup = styled.div`
 const Step1 = ({ handleNext, handleBack }) => {
   const dispatch = useDispatch();
   const personal = useSelector((state) => state.registrationReducer.personal);
-  const accountType = useSelector(
-    (state) => state.registrationReducer.accountType
-  );
 
   const { register, handleSubmit, control, errors } = useForm();
 
@@ -69,7 +66,7 @@ const Step1 = ({ handleNext, handleBack }) => {
       case "required":
         return "O nome é obrigatório";
       case "maxLength":
-        return "O nome fornecido é longo demais (máx. 150 caractéres)";
+        return "O nome fornecido é longo demais (máx. 155 caractéres)";
       case "minLength":
         return "O nome fornecido é curto demais (mín. 4 caractéres)";
       default:
@@ -91,8 +88,7 @@ const Step1 = ({ handleNext, handleBack }) => {
     <Fade in={true}>
       <Form onSubmit={handleSubmit(submitStep)} noValidate>
         <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
-          Dados pessoais do{" "}
-          {accountType === "mediador" ? "mediador" : "usuário"}
+          Dados pessoais
         </FormLabel>
         <InputGroup>
           <TextField
@@ -124,7 +120,7 @@ const Step1 = ({ handleNext, handleBack }) => {
             required
             inputRef={register({
               required: true,
-              maxLength: 150,
+              maxLength: 155,
               minLength: 4,
             })}
             helperText={errors.fullname && getErrorMessageName(errors.fullname)}

@@ -152,6 +152,10 @@ const Professional = ({ handleNext, handleBack }) => {
       setHasClickedSubmit(true);
       return;
     }
+    if (units.length === 0) {
+      setHasClickedSubmit(true);
+      return;
+    }
 
     let specialization = [];
     if (civel) {
@@ -184,7 +188,7 @@ const Professional = ({ handleNext, handleBack }) => {
   };
 
   const validateAverageValue = (value) => {
-    return ["voluntario", "$", "$$", "$$$"].includes(value);
+    return ["voluntario", "$", "$$", "$$$", "$$$$"].includes(value);
   };
 
   const enforceSelect = (value) => {
@@ -278,17 +282,17 @@ const Professional = ({ handleNext, handleBack }) => {
                 required
                 rules={{ required: true, validate: validateAverageValue }}
                 helperText={
-                  errors.average_value &&
-                  "Selecione o patamar do valor médio cobrado"
+                  errors.average_value && "Selecione um valor médio cobrado"
                 }
                 error={!!errors.average_value}
                 style={{ minWidth: "100%" }}
               >
                 <MenuItem value="selecione">Selecione</MenuItem>
                 <MenuItem value="voluntario">Voluntário</MenuItem>
-                <MenuItem value="$">Básico</MenuItem>
-                <MenuItem value="$$">Médio</MenuItem>
-                <MenuItem value="$$$">Alto</MenuItem>
+                <MenuItem value="$">Patamar Básico</MenuItem>
+                <MenuItem value="$$">Patamar Intermediário</MenuItem>
+                <MenuItem value="$$$">Patamar Avançado</MenuItem>
+                <MenuItem value="$$$$">Patamar Extraordinário</MenuItem>
               </Controller>
             </InputGroup>
           )}

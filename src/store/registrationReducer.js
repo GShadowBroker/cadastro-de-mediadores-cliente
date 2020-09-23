@@ -1,10 +1,28 @@
 const initialState = {
-  accountType: "usuario",
+  accountType: "mediador",
   personal: {
     cpf: "",
     fullname: "",
     sex: "",
     birthday: "2000-01-01",
+  },
+  camara: {
+    cnpj: "",
+    nome_fantasia: "",
+    razao_social: "",
+    cpf_responsavel: "",
+    estatuto: "",
+    nada_consta: "",
+    average_value: "",
+    site: "",
+    actuation_units: [],
+    actuation_city: "",
+    actuation_uf: "",
+    cep: "",
+    address: "",
+    complement: "",
+    number: "",
+    district: "",
   },
   professional: {
     certification: "",
@@ -35,6 +53,8 @@ const authReducer = (state = initialState, action) => {
       return { ...state, accountType: action.payload };
     case "UPDATE_PERSONAL":
       return { ...state, personal: action.payload };
+    case "UPDATE_CAMARA":
+      return { ...state, camara: action.payload };
     case "UPDATE_PROFESSIONAL":
       return { ...state, professional: action.payload };
     case "UPDATE_CONTACT":
@@ -56,6 +76,11 @@ export const submitAccountType = (accountType) => ({
 export const submitPersonal = (personal) => ({
   type: "UPDATE_PERSONAL",
   payload: personal,
+});
+
+export const submitCamara = (camara) => ({
+  type: "UPDATE_CAMARA",
+  payload: camara,
 });
 
 export const submitProfessional = (professional) => ({

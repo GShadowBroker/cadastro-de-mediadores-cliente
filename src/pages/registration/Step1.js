@@ -21,9 +21,6 @@ const LabelControl = styled(FormControlLabel)`
   display: flex;
   justify-content: left;
 
-  &:not(:last-of-type) {
-    margin-top: 35px;
-  }
   &:hover {
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   }
@@ -59,7 +56,9 @@ const Step1 = ({ handleNext }) => {
     <Fade in={true}>
       <Form onSubmit={handleSubmit}>
         <FormControl component="fieldset">
-          <FormLabel component="legend">Como deseja se cadastrar?</FormLabel>
+          <FormLabel component="legend" style={{ marginBottom: "1.5rem" }}>
+            Como deseja se cadastrar?
+          </FormLabel>
           <RadioGroup
             aria-label="tipo_de_cadastro"
             name="cadastro"
@@ -68,14 +67,19 @@ const Step1 = ({ handleNext }) => {
             style={{ minWidth: "100%" }}
           >
             <LabelControl
-              value="usuario"
-              control={<Radio color="primary" />}
-              label="Usuário"
-            />
-            <LabelControl
               value="mediador"
               control={<Radio color="primary" />}
               label="Mediador"
+            />
+            <LabelControl
+              value="camara"
+              control={<Radio color="primary" />}
+              label="Câmara privada"
+            />
+            <LabelControl
+              value="nupemec"
+              control={<Radio color="primary" />}
+              label="NUPEMEC"
             />
           </RadioGroup>
         </FormControl>
