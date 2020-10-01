@@ -4,7 +4,7 @@ const initialState = {
     cpf: "",
     fullname: "",
     sex: "",
-    birthday: "2000-01-01",
+    born: "2000-01-01",
   },
   camara: {
     cnpj: "",

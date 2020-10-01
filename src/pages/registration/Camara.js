@@ -696,7 +696,6 @@ const Camara = ({ handleNext, handleBack }) => {
             variant="outlined"
             value={complement}
             onChange={onComplementChange}
-            required
             style={{ width: "100%" }}
             disabled={!isCepValid(cep)}
           />

@@ -5,17 +5,22 @@ const initialState = {
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "LOGIN_SUCCESS":
-      return { ...state, isAuthenticated: true };
-    case "LOGIN_FAILURE":
-      return { ...state, isAuthenticated: false };
-    case "ADD_USER":
-      return { ...state, user: action.user };
-    case "REMOVE_USER":
-      return { ...state, user: null };
+    case "LOGIN":
+      return { isAuthenticated: true, user: action.user };
+    case "LOGOUT":
+      return { isAuthenticated: false, user: null };
     default:
       return state;
   }
 };
+
+export const login = (user) => ({
+  type: "LOGIN",
+  user,
+});
+
+export const logout = () => ({
+  type: "LOGOUT",
+});
 
 export default authReducer;

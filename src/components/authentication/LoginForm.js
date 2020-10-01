@@ -39,8 +39,12 @@ const LoginForm = ({ handleLogin, loading }) => {
   const { register, errors, handleSubmit } = useForm();
 
   const handleLoginSubmit = (data) => {
-    console.log("data", data);
-    handleLogin();
+    const { email, password } = data;
+    const credentials = {
+      email,
+      password,
+    };
+    handleLogin(credentials);
   };
 
   const getErrorMessagePassword = (error) => {

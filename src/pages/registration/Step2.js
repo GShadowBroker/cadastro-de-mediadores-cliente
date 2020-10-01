@@ -39,8 +39,8 @@ const Step1 = ({ handleNext, handleBack }) => {
   const { register, handleSubmit, control, errors } = useForm();
 
   const submitStep = (data) => {
-    let { fullname, sex, birthday } = data;
-    if (!data.cpf || !fullname || !sex || !birthday) return;
+    let { fullname, sex, born } = data;
+    if (!data.cpf || !fullname || !sex || !born) return;
     if (!["feminino", "masculino"].includes(sex)) return;
     const personalInfo = {
       ...data,
@@ -54,7 +54,7 @@ const Step1 = ({ handleNext, handleBack }) => {
     return ["feminino", "masculino"].includes(value);
   };
 
-  const validateBirthdate = (value) => {
+  const validateBorn = (value) => {
     if (new Date(value) >= new Date() - 1000 * 60 * 60 * 24 * 30 * 12 * 18)
       return false;
     else if (new Date(value) <= new Date("1900-01-01")) return false;
@@ -152,21 +152,21 @@ const Step1 = ({ handleNext, handleBack }) => {
         </InputGroup>
         <InputGroup>
           <TextField
-            id="birthday"
-            name="birthday"
+            id="born"
+            name="born"
             label="Data de nascimeto"
             type="date"
-            defaultValue={personal.birthday}
+            defaultValue={personal.born}
             variant="outlined"
             required
             InputLabelProps={{
               shrink: true,
             }}
-            inputRef={register({ required: true, validate: validateBirthdate })}
+            inputRef={register({ required: true, validate: validateBorn })}
             helperText={
-              errors.birthday && "Data de nascimento inválida ou inverossímil"
+              errors.born && "Data de nascimento inválida ou inverossímil"
             }
-            error={!!errors.birthday}
+            error={!!errors.born}
             style={{ minWidth: "100%" }}
           />
         </InputGroup>

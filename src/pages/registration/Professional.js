@@ -225,7 +225,7 @@ const Professional = ({ handleNext, handleBack }) => {
       case "validate":
         return "O link informado é inválido";
       case "maxLength":
-        return "O link informado é longo demais (máx. 155 caractéres)";
+        return "O link informado é longo demais (máx. 1000 caractéres)";
       default:
         return "Campo inválido";
     }
@@ -357,7 +357,7 @@ const Professional = ({ handleNext, handleBack }) => {
             inputRef={register({
               required: true,
               validate: (value) => isValidURL(value),
-              maxLength: 155,
+              maxLength: 1000,
             })}
             helperText={errors.lattes && getErrorMessageLattes(errors.lattes)}
             error={!!errors.lattes}
