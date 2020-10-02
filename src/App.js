@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/registration/Register";
+import Home from "./pages/Home";
 import { login, logout } from "./services/authService";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./services/authService";
 import { login as runLogin, logout as runLogout } from "./store/authReducer";
+import errorHandler from "./utils/errorHandler";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -14,7 +16,6 @@ const App = () => {
   const session = useSelector((state) => state.authReducer);
 
   useEffect(() => {
-    console.log("session", session);
     if (!session.isAuthenticated) {
       setLoading(true);
       getUser()
@@ -23,8 +24,9 @@ const App = () => {
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
           setLoading(false);
+          console.log(errorHandler(err));
+          console.error(err);
         });
     }
   }, [session, dispatch]);
@@ -79,6 +81,9 @@ const App = () => {
         </Route>
         <Route path="/registro">
           <Register />
+        </Route>
+        <Route>
+          <Home path="/" />
         </Route>
         <Route path="*">
           <Redirect to="/login" />

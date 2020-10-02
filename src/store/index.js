@@ -3,10 +3,12 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import authReducer from "./authReducer";
 import registrationReducer from "./registrationReducer";
+import mediatorsReducer from "./mediatorsReducer";
 
 const rootReducer = combineReducers({
   authReducer,
   registrationReducer,
+  mediatorsReducer,
 });
 
 const store = createStore(
