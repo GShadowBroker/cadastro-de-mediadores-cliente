@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import colors from "../constants/colors";
+import { Link } from "react-router-dom";
 
 const FooterContainer = styled.div`
   height: 80px;
@@ -51,16 +52,16 @@ const Footer = () => {
     <FooterContainer>
       <FooterMenu>
         <li>
-          <a href="/">Página Inicial</a>
+          <Link to="/">Página Inicial</Link>
         </li>
         <li>
-          <a href="/">Sobre Nós</a>
+          <Link to="/">Sobre Nós</Link>
         </li>
         <li>
-          <a href="/">Termos e Condições</a>
+          <Link to="/">Termos e Condições</Link>
         </li>
         <li>
-          <a href="/">Política de Privacidade</a>
+          <Link to="/">Política de Privacidade</Link>
         </li>
       </FooterMenu>
     </FooterContainer>

@@ -32,7 +32,7 @@ const InputGroup = styled.div`
   max-width: 100%;
 `;
 
-const Step1 = ({ handleNext, handleBack }) => {
+const Personal = ({ handleNext, handleBack }) => {
   const dispatch = useDispatch();
   const personal = useSelector((state) => state.registrationReducer.personal);
 
@@ -154,7 +154,7 @@ const Step1 = ({ handleNext, handleBack }) => {
           <TextField
             id="born"
             name="born"
-            label="Data de nascimeto"
+            label="Data de nascimento"
             type="date"
             defaultValue={personal.born}
             variant="outlined"
@@ -187,4 +187,4 @@ const Step1 = ({ handleNext, handleBack }) => {
   );
 };
 
-export default Step1;
+export default Personal;

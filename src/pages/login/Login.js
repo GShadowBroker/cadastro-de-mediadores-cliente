@@ -3,7 +3,7 @@ import styled from "styled-components";
 import colors from "../../constants/colors";
 import LoginForm from "../../components/authentication/LoginForm";
 import { Link } from "react-router-dom";
-import { Button } from "@material-ui/core";
+import { Button, Fade } from "@material-ui/core";
 import Footer from "../../components/Footer";
 
 const Wrapper = styled.div`
@@ -111,37 +111,41 @@ const OrLine = styled.div`
 
 const Login = ({ handleLogin, loading }) => {
   return (
-    <Wrapper>
-      <Container>
-        <LoginCard>
-          <ImageContainer source={require("../../assets/images/mediation.jpg")}>
-            <Filter />
-          </ImageContainer>
-          <FormContainer>
-            <Header>Login</Header>
-            <SubHeader>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            </SubHeader>
-            <LoginForm handleLogin={handleLogin} loading={loading} />
-            <OrLine>
-              <span>ou</span>
-            </OrLine>
-            <Button
-              variant="outlined"
-              color="primary"
-              fullWidth
-              component={Link}
-              to="/registro"
-              style={{ color: colors.light.primary.main }}
+    <Fade in={true}>
+      <Wrapper>
+        <Container>
+          <LoginCard>
+            <ImageContainer
+              source={require("../../assets/images/mediation.jpg")}
             >
-              CADASTRE-SE
-            </Button>
-          </FormContainer>
-        </LoginCard>
+              <Filter />
+            </ImageContainer>
+            <FormContainer>
+              <Header>Login</Header>
+              <SubHeader>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+              </SubHeader>
+              <LoginForm handleLogin={handleLogin} loading={loading} />
+              <OrLine>
+                <span>ou</span>
+              </OrLine>
+              <Button
+                variant="outlined"
+                color="primary"
+                fullWidth
+                component={Link}
+                to="/registro"
+                style={{ color: colors.light.primary.main }}
+              >
+                CADASTRE-SE
+              </Button>
+            </FormContainer>
+          </LoginCard>
 
-        <Footer />
-      </Container>
-    </Wrapper>
+          <Footer />
+        </Container>
+      </Wrapper>
+    </Fade>
   );
 };
 

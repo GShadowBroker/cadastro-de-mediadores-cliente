@@ -22,6 +22,7 @@ import Spinner from "../../components/utils/Spinner";
 import colors from "../../constants/colors";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { getAddressByCep } from "../../services/cepService";
+import fileToBase64 from "../../utils/fileToBase64";
 
 const Form = styled.form`
   display: flex;
@@ -186,7 +187,7 @@ const Camara = ({ handleNext, handleBack }) => {
     return units && units.length > 0;
   };
 
-  const submitStep = (data) => {
+  const submitStep = async (data) => {
     const {
       cnpj,
       nome_fantasia,
@@ -203,12 +204,21 @@ const Camara = ({ handleNext, handleBack }) => {
     const estatuto_att = estatuto.length > 0 ? estatuto[0] : null;
     const nada_consta_att = nada_consta.length > 0 ? nada_consta[0] : null;
 
+    let base64_estatuto_att;
+    if (estatuto_att) {
+      base64_estatuto_att = await fileToBase64(estatuto_att);
+    }
+    let base64_nada_consta_att;
+    if (nada_consta_att) {
+      base64_nada_consta_att = await fileToBase64(nada_consta_att);
+    }
+
     if (
       !cnpj ||
       !nome_fantasia ||
       !razao_social ||
       !cpf_responsavel ||
-      !estatuto_att ||
+      !base64_estatuto_att ||
       !average_value ||
       !actuation_uf ||
       !actuation_city ||
@@ -218,22 +228,24 @@ const Camara = ({ handleNext, handleBack }) => {
       return;
     }
 
+    // ATENÇÃO! ADICIONAR FUNCIONALIDADE PARA QUE O USUÁRIO POSSA ADICIONAR MÚLTIPLAS CIDADES!
+    const actuation_cities = [`${actuation_city}/${actuation_uf}`];
+
     const camaraInfo = {
       cnpj,
       nome_fantasia,
       razao_social,
       cpf_responsavel,
-      estatuto: estatuto_att || null,
-      nada_consta: nada_consta_att || null,
+      estatuto: base64_estatuto_att || "",
+      nada_consta: base64_nada_consta_att || "",
       average_value,
       site,
       actuation_units: units || [],
-      actuation_city,
-      actuation_uf,
+      actuation_cities,
       cep,
       address,
       complement,
-      number,
+      number: +number,
       district,
     };
     dispatch(submitCamara(camaraInfo));
@@ -760,6 +772,7 @@ const Camara = ({ handleNext, handleBack }) => {
           severity={snackSeverity}
           autoHideDuration={6000}
           snackOpen={snackOpen}
+          setSnackOpen={setSnackOpen}
         />
       </Form>
     </Fade>

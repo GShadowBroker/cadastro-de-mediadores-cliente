@@ -40,7 +40,7 @@ const ActionGroup = styled.div`
   justify-content: flex-end;
 `;
 
-const Step1 = ({ handleNext }) => {
+const AccountType = ({ handleNext }) => {
   const dispatch = useDispatch();
   const accountType = useSelector(
     (state) => state.registrationReducer.accountType
@@ -76,11 +76,6 @@ const Step1 = ({ handleNext }) => {
               control={<Radio color="primary" />}
               label="Câmara privada"
             />
-            <LabelControl
-              value="nupemec"
-              control={<Radio color="primary" />}
-              label="NUPEMEC"
-            />
           </RadioGroup>
         </FormControl>
         <ActionGroup>
@@ -100,4 +95,4 @@ const Step1 = ({ handleNext }) => {
   );
 };
 
-export default Step1;
+export default AccountType;

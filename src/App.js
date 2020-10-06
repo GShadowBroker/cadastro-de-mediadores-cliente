@@ -3,6 +3,11 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/registration/Register";
 import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Test from "./pages/Test";
+import ValidateEmail from "./pages/registration/ValidateEmail";
+
 import { login, logout } from "./services/authService";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./services/authService";
@@ -55,42 +60,62 @@ const App = () => {
     }
   };
 
-  if (session.isAuthenticated) {
-    return (
-      <Switch>
-        <Route path="/protected">
-          <div>
-            <h1>You are now logged in!</h1>
-            {loading ? (
-              <button>aguarde...</button>
-            ) : (
-              <button onClick={handleLogout}>logout</button>
-            )}
-          </div>
-        </Route>
-        <Route path="*">
-          <Redirect to="/protected" />
-        </Route>
-      </Switch>
-    );
-  } else {
-    return (
-      <Switch>
-        <Route path="/login">
+  return (
+    <Switch>
+      <Route path="/validar-conta/:account_type/:user_id/:verification_code">
+        <Navbar handleLogout={handleLogout} />
+        <ValidateEmail />
+        <Footer />
+      </Route>
+
+      <Route path="/login">
+        {session.isAuthenticated ? (
+          <Redirect to="/perfil" />
+        ) : (
           <Login handleLogin={handleLogin} loading={loading} />
-        </Route>
-        <Route path="/registro">
-          <Register />
-        </Route>
-        <Route>
-          <Home path="/" />
-        </Route>
-        <Route path="*">
+        )}
+      </Route>
+
+      <Route path="/registro">
+        {session.isAuthenticated ? <Redirect to="/perfil" /> : <Register />}
+      </Route>
+
+      <Route path="/test">
+        <Test />
+      </Route>
+
+      <Route path="/perfil">
+        {session.isAuthenticated ? (
+          <React.Fragment>
+            <Navbar handleLogout={handleLogout} />
+            <div>
+              <h1>You are now logged in!</h1>
+              {loading ? (
+                <button>aguarde...</button>
+              ) : (
+                <button onClick={handleLogout}>logout</button>
+              )}
+            </div>
+            <Footer />
+          </React.Fragment>
+        ) : (
           <Redirect to="/login" />
-        </Route>
-      </Switch>
-    );
-  }
+        )}
+      </Route>
+
+      <Route path="/">
+        <React.Fragment>
+          <Navbar handleLogout={handleLogout} />
+          <Home />
+          <Footer />
+        </React.Fragment>
+      </Route>
+
+      <Route path="*">
+        <Redirect to="/login" />
+      </Route>
+    </Switch>
+  );
 };
 
 export default App;

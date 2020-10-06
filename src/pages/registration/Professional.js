@@ -24,6 +24,7 @@ import { submitProfessional } from "../../store/registrationReducer";
 import { getUfList, getCitiesByUf } from "../../services/ibgeService";
 import Spinner from "../../components/utils/Spinner";
 import colors from "../../constants/colors";
+import fileToBase64 from "../../utils/fileToBase64";
 
 const Form = styled.form`
   display: flex;
@@ -117,24 +118,7 @@ const Professional = ({ handleNext, handleBack }) => {
     }
   }, [watchActuationUf]);
 
-  const isSpecializationProvided = () => {
-    if (!hasClickedSubmit) return true;
-    if (
-      watchCivel === undefined &&
-      watchFamilia === undefined &&
-      watchEmpresarial === undefined
-    ) {
-      return true;
-    }
-    return !!watchCivel || !!watchFamilia || !!watchEmpresarial;
-  };
-
-  const isActuationUnitProvided = () => {
-    if (!hasClickedSubmit) return true;
-    return units && units.length > 0;
-  };
-
-  const submitStep = (data) => {
+  const submitStep = async (data) => {
     const {
       certification,
       average_value,
@@ -168,19 +152,42 @@ const Professional = ({ handleNext, handleBack }) => {
       specialization.push("empresarial");
     }
 
+    // ATENÇÃO! ADICIONAR FUNCIONALIDADE PARA QUE O USUÁRIO POSSA ADICIONAR MÚLTIPLAS CIDADES!
+    const actuation_cities = [`${actuation_city}/${actuation_uf}`];
+
+    const base64_attachment = await fileToBase64(
+      attachment.length > 0 && attachment[0]
+    );
+
     const professionalInfo = {
       certification,
-      average_value,
-      attachment: attachment.length > 0 ? attachment[0] : null,
+      average_value: average_value || "voluntario",
+      attachment: base64_attachment || "",
       specialization,
       lattes,
       resume,
       actuation_units: units,
-      actuation_city,
-      actuation_uf,
+      actuation_cities,
     };
     dispatch(submitProfessional(professionalInfo));
     handleNext();
+  };
+
+  const isSpecializationProvided = () => {
+    if (!hasClickedSubmit) return true;
+    if (
+      watchCivel === undefined &&
+      watchFamilia === undefined &&
+      watchEmpresarial === undefined
+    ) {
+      return true;
+    }
+    return !!watchCivel || !!watchFamilia || !!watchEmpresarial;
+  };
+
+  const isActuationUnitProvided = () => {
+    if (!hasClickedSubmit) return true;
+    return units && units.length > 0;
   };
 
   const validateCertification = (value) => {
@@ -534,6 +541,7 @@ const Professional = ({ handleNext, handleBack }) => {
           severity={snackSeverity}
           autoHideDuration={6000}
           snackOpen={snackOpen}
+          setSnackOpen={setSnackOpen}
         />
       </Form>
     </Fade>

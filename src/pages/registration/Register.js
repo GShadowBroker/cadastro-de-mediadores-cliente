@@ -15,8 +15,8 @@ import {
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import { useSelector } from "react-redux";
 
-import Step1 from "./Step1";
-import Step2 from "./Step2";
+import AccountType from "./AccountType";
+import Personal from "./Personal";
 import Camara from "./Camara";
 import Professional from "./Professional";
 import Contact from "./Contact";
@@ -57,8 +57,6 @@ const getSteps = (type) => {
       ];
     case "camara":
       return ["Tipo de conta", "Dados da câmara", "Contato", "Finalizar"];
-    case "nupemec":
-      return ["Tipo de conta", "Dados pessoais", "Contato", "Finalizar"];
     default:
       return [
         "Tipo de conta",
@@ -92,9 +90,11 @@ const Register = () => {
     if (accountType === "mediador") {
       switch (step) {
         case 0:
-          return <Step1 handleBack={handleBack} handleNext={handleNext} />;
+          return (
+            <AccountType handleBack={handleBack} handleNext={handleNext} />
+          );
         case 1:
-          return <Step2 handleNext={handleNext} handleBack={handleBack} />;
+          return <Personal handleNext={handleNext} handleBack={handleBack} />;
         case 2:
           return (
             <Professional handleNext={handleNext} handleBack={handleBack} />
@@ -106,25 +106,14 @@ const Register = () => {
         default:
           return "Unknown step";
       }
-    } else if (accountType === "camara") {
-      switch (step) {
-        case 0:
-          return <Step1 handleBack={handleBack} handleNext={handleNext} />;
-        case 1:
-          return <Camara handleNext={handleNext} handleBack={handleBack} />;
-        case 2:
-          return <Contact handleNext={handleNext} handleBack={handleBack} />;
-        case 3:
-          return <Finish handleNext={handleNext} handleBack={handleBack} />;
-        default:
-          return "Unknown step";
-      }
     } else {
       switch (step) {
         case 0:
-          return <Step1 handleBack={handleBack} handleNext={handleNext} />;
+          return (
+            <AccountType handleBack={handleBack} handleNext={handleNext} />
+          );
         case 1:
-          return <Step2 handleNext={handleNext} handleBack={handleBack} />;
+          return <Camara handleNext={handleNext} handleBack={handleBack} />;
         case 2:
           return <Contact handleNext={handleNext} handleBack={handleBack} />;
         case 3:

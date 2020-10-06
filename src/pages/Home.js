@@ -1,24 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
   Container,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
   makeStyles,
-  CircularProgress,
   Tabs,
   Tab,
   Box,
+  Fade,
 } from "@material-ui/core";
-import { Rating } from "@material-ui/lab";
-import { useSelector, useDispatch } from "react-redux";
-import { getMediatorsList, getCamarasList } from "../services/mediatorsService";
 
 import CamarasTable from "../components/CamarasTable";
 import MediatorsTable from "../components/MediatorsTable";
@@ -29,7 +19,7 @@ const useStyles = makeStyles({
   },
   root: {
     flexGrow: 1,
-    margin: "1rem 0",
+    margin: "1.5rem 0",
   },
 });
 
@@ -69,27 +59,29 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Paper className={classes.root}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-          aria-label="lista de mediadores"
-          centered
-        >
-          <Tab label="Mediadores" {...a11yProps(0)} />
-          <Tab label="Câmaras privadas" {...a11yProps(1)} />
-        </Tabs>
-        <TabPanel value={value} index={0}>
-          <MediatorsTable />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <CamarasTable />
-        </TabPanel>
-      </Paper>
-    </Container>
+    <Fade in={true}>
+      <Container maxWidth="md">
+        <Paper className={classes.root}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            aria-label="lista de mediadores"
+            centered
+          >
+            <Tab label="Mediadores" {...a11yProps(0)} />
+            <Tab label="Câmaras privadas" {...a11yProps(1)} />
+          </Tabs>
+          <TabPanel value={value} index={0}>
+            <MediatorsTable />
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <CamarasTable />
+          </TabPanel>
+        </Paper>
+      </Container>
+    </Fade>
   );
 };
 

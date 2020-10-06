@@ -9,6 +9,7 @@ import {
   Paper,
   makeStyles,
   TablePagination,
+  Fade,
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import { useSelector, useDispatch } from "react-redux";
@@ -81,21 +82,42 @@ const CamarasTable = () => {
   );
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-    getCamarasList({ limit, offset: offset + limit * (page + 1) })
-      .then((data) => {
-        dispatch(initCamaras(data.rows, data.count));
-      })
-      .catch((err) => {
-        setSnackOpen(true);
-        setSnackMessage(errorHandler(err));
-      });
+    if (newPage > page) {
+      // Next page
+      setPage(newPage);
+      const nextOffset = offset + limit;
+      getCamarasList({ limit, offset: nextOffset })
+        .then((data) => {
+          dispatch(initCamaras(data.rows, data.count));
+          setOffset(nextOffset);
+        })
+        .catch((err) => {
+          setSnackOpen(true);
+          setSnackMessage(errorHandler(err));
+        });
+      window.scrollTo(0, 0);
+    } else {
+      // Previous page
+      setPage(newPage);
+      const prevOffset = offset - limit;
+      getCamarasList({ limit, offset: prevOffset })
+        .then((data) => {
+          dispatch(initCamaras(data.rows, data.count));
+          setOffset(prevOffset);
+        })
+        .catch((err) => {
+          setSnackOpen(true);
+          setSnackMessage(errorHandler(err));
+        });
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleChangeRowsPerPage = (event) => {
     setLimit(+event.target.value);
     setPage(0);
-    getCamarasList({ limit: +event.target.value, offset })
+    setOffset(0);
+    getCamarasList({ limit: +event.target.value, offset: 0 })
       .then((data) => {
         dispatch(initCamaras(data.rows, data.count));
       })
@@ -119,39 +141,41 @@ const CamarasTable = () => {
         rowsPerPage={limit}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Nome</TableCell>
-              <TableCell align="right">Unidades de atuação</TableCell>
-              <TableCell align="right">Cidades de atuação</TableCell>
-              <TableCell align="right">Qualificação</TableCell>
-              <TableCell align="right">Valor Médio</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell component="th" scope="row">
-                  {row.nome_fantasia}
-                </TableCell>
-                <TableCell align="right">{row.units.join(", ")}</TableCell>
-                <TableCell align="right">{row.cities.join(", ")}</TableCell>
-                <TableCell align="right">
-                  <Rating
-                    name="half-rating"
-                    value={row.rating}
-                    precision={0.5}
-                    readOnly
-                  />
-                </TableCell>
-                <TableCell align="right">{row.average_value}</TableCell>
+      <Fade in={true}>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Nome</TableCell>
+                <TableCell align="right">Unidades de atuação</TableCell>
+                <TableCell align="right">Cidades de atuação</TableCell>
+                <TableCell align="right">Qualificação</TableCell>
+                <TableCell align="right">Valor Médio</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell component="th" scope="row">
+                    {row.nome_fantasia}
+                  </TableCell>
+                  <TableCell align="right">{row.units.join(", ")}</TableCell>
+                  <TableCell align="right">{row.cities.join(", ")}</TableCell>
+                  <TableCell align="right">
+                    <Rating
+                      name="half-rating"
+                      value={row.rating}
+                      precision={0.5}
+                      readOnly
+                    />
+                  </TableCell>
+                  <TableCell align="right">{row.average_value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Fade>
       <TablePagination
         rowsPerPageOptions={[40, 60, 100]}
         labelRowsPerPage="Câmaras por página"

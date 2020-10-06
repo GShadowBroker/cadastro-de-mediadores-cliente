@@ -14,6 +14,10 @@ import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { submitConfirm } from "../../store/registrationReducer";
+import { registerMediator, registerCamara } from "../../services/authService";
+import Spinner from "../../components/utils/Spinner";
+import errorHandler from "../../utils/errorHandler";
+import Snackbar from "../../components/utils/Snackbar";
 
 const Form = styled.form`
   display: flex;
@@ -36,8 +40,13 @@ const InputGroup = styled.div`
 `;
 
 const Finish = ({ handleNext, handleBack }) => {
+  const [loading, setLoading] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+
   const dispatch = useDispatch();
   const confirm = useSelector((state) => state.registrationReducer.confirm);
+  const form = useSelector((state) => state.registrationReducer);
 
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, errors, watch } = useForm();
@@ -51,7 +60,92 @@ const Finish = ({ handleNext, handleBack }) => {
       ...data,
     };
     dispatch(submitConfirm(confirmInfo));
-    handleNext(); // SAVE TO DATABASE FIRST!!!
+
+    if (form.accountType === "mediador") {
+      const filledForm = {
+        cpf: form.personal.cpf,
+        fullname: form.personal.fullname,
+        sex: form.personal.sex,
+        born: form.personal.born,
+        certification: form.professional.certification,
+        average_value: form.professional.average_value,
+        attachment: form.professional.attachment,
+        specialization: form.professional.specialization,
+        lattes: form.professional.lattes,
+        resume: form.professional.resume,
+        actuation_units: form.professional.actuation_units,
+        actuation_cities: form.professional.actuation_cities,
+        email: form.contact.email,
+        alternative_email: form.contact.alternative_email,
+        phone: form.contact.phone,
+        cellphone: form.contact.cellphone,
+        password,
+        acceptTerms,
+      };
+      setLoading(true);
+      console.log("filledForm", filledForm);
+      registerMediator(filledForm)
+        .then((data) => {
+          console.log(data);
+          setLoading(false);
+          handleNext();
+        })
+        .catch((err) => {
+          const error = errorHandler(err);
+          if (Array.isArray(error)) {
+            setLoading(false);
+            setSnackMessage(error.map((e) => e.message).join("; "));
+            setSnackOpen(true);
+          } else {
+            setLoading(false);
+            setSnackMessage(error);
+            setSnackOpen(true);
+          }
+        });
+    } else {
+      const filledForm = {
+        cnpj: form.camara.cnpj,
+        nome_fantasia: form.camara.nome_fantasia,
+        razao_social: form.camara.razao_social,
+        cpf_responsavel: form.camara.cpf_responsavel,
+        estatuto: form.camara.estatuto,
+        nada_consta: form.camara.nada_consta,
+        average_value: form.camara.average_value,
+        site: form.camara.site,
+        actuation_units: form.camara.actuation_units,
+        actuation_cities: form.camara.actuation_cities,
+        cep: form.camara.cep,
+        address: form.camara.address,
+        complement: form.camara.complement,
+        number: form.camara.number,
+        district: form.camara.district,
+        email: form.contact.email,
+        alternative_email: form.contact.alternative_email,
+        phone: form.contact.phone,
+        cellphone: form.contact.cellphone,
+        password,
+        acceptTerms,
+      };
+      setLoading(true);
+      console.log("filledForm", filledForm);
+      registerCamara(filledForm)
+        .then((data) => {
+          setLoading(false);
+          handleNext();
+        })
+        .catch((err) => {
+          const error = errorHandler(err);
+          if (Array.isArray(error)) {
+            setLoading(false);
+            setSnackMessage(error.map((e) => e.message).join("; "));
+            setSnackOpen(true);
+          } else {
+            setLoading(false);
+            setSnackMessage(error);
+            setSnackOpen(true);
+          }
+        });
+    }
   };
 
   const validatePassword = (value) => {
@@ -132,16 +226,31 @@ const Finish = ({ handleNext, handleBack }) => {
 
         <ActionGroup>
           <Button onClick={handleBack}>Voltar</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            style={{ marginLeft: "1.5rem" }}
-            disabled={!watchAccept}
-          >
-            Concluir e salvar
-          </Button>
+
+          {loading ? (
+            <Button variant="contained" color="primary" disabled>
+              <Spinner />
+              <span style={{ marginLeft: 5 }}>processando</span>
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              style={{ marginLeft: "1.5rem" }}
+              disabled={!watchAccept}
+            >
+              Concluir e salvar
+            </Button>
+          )}
         </ActionGroup>
+        <Snackbar
+          message={snackMessage}
+          severity="error"
+          autoHideDuration={6000}
+          snackOpen={snackOpen}
+          setSnackOpen={setSnackOpen}
+        />
       </Form>
     </Fade>
   );
