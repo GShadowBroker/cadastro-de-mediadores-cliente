@@ -14,7 +14,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
 import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+/* import NotificationsIcon from "@material-ui/icons/Notifications"; */
 import colors from "../constants/colors";
 
 import { useSelector } from "react-redux";

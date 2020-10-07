@@ -4,12 +4,9 @@ import Login from "./pages/login/Login";
 import Register from "./pages/registration/Register";
 import Home from "./pages/Home";
 import PrivateRoutes from "./PrivateRoutes";
-import Profile from "./pages/private/Profile";
-import PublicProfile from "./pages/PublicProfileMediator";
 import Navbar from "./components/Navbar";
 import DrawerMenu from "./components/DrawerMenu";
 import Footer from "./components/Footer";
-import Test from "./pages/Test";
 import ValidateEmail from "./pages/registration/ValidateEmail";
 
 import { login, logout } from "./services/authService";
@@ -49,7 +46,7 @@ const App = () => {
     if (!["/", "/login", "/registro"].includes(location.pathname)) {
       setRedirectRoute(location.pathname);
     }
-  }, []);
+  }, []); // eslint-disable-line
 
   const handleLogin = async (data) => {
     setLoading(true);
@@ -130,10 +127,6 @@ const App = () => {
         ) : (
           <Register />
         )}
-      </Route>
-
-      <Route path="/test">
-        <Test />
       </Route>
 
       <Route path="/perfil">

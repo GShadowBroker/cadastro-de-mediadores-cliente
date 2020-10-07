@@ -1,5 +1,4 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Button, Typography, Drawer } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -17,7 +16,7 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import styled from "styled-components";
 
 import { useSelector } from "react-redux";
-import { useHistory, useLocation, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import colors from "../constants/colors";
 
 const DrawerHeader = styled.div`
@@ -34,7 +33,6 @@ const DrawerHeader = styled.div`
 `;
 
 const DrawerContent = ({ user, handleLogout, toggleDrawer }) => {
-  const history = useHistory();
   const location = useLocation();
 
   if (user) {

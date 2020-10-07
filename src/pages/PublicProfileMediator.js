@@ -31,7 +31,7 @@ const PublicProfileMediator = () => {
           setSnackOpen(true);
         });
     }
-  }, [id]);
+  }, [id, session]);
 
   if (loading) return <h1>CARREGANDO...</h1>;
   if (!user) return <h1>Erro</h1>;

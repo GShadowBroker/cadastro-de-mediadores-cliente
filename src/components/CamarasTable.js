@@ -56,7 +56,7 @@ const CamarasTable = () => {
           setSnackMessage(errorHandler(err));
         });
     }
-  }, [camaras]);
+  }, [camaras, dispatch, offset, limit]);
 
   const classes = useStyles();
 

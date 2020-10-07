@@ -15,7 +15,7 @@ import {
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { AccountCircle } from "@material-ui/icons";
-import { useLocation, useHistory, Link, Route, Switch } from "react-router-dom";
+import { useLocation, Link, Route, Switch } from "react-router-dom";
 import HomeIcon from "@material-ui/icons/Home";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import NotificationsIcon from "@material-ui/icons/Notifications";

@@ -56,7 +56,7 @@ const MediatorsTable = () => {
           setSnackMessage(errorHandler(err));
         });
     }
-  }, [mediators]);
+  }, [mediators, dispatch, limit, offset]);
 
   const classes = useStyles();
 
@@ -91,8 +91,6 @@ const MediatorsTable = () => {
       window.scrollTo(0, 0);
     } else {
       // Previous page
-
-      // offset=40, limit=40, page=1
       setPage(newPage);
       const prevOffset = offset - limit;
       getMediatorsList({ limit, offset: prevOffset })

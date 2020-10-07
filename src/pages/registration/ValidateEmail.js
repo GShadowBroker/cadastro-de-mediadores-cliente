@@ -20,7 +20,7 @@ const ValidateEmail = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    let timerID = null;
+    let timerID = null; // eslint-disable-line
     if (account_type && user_id && verification_code) {
       validateEmail(user_id, account_type, verification_code)
         .then((response) => {
@@ -36,7 +36,7 @@ const ValidateEmail = () => {
         });
     }
     return (timerID) => clearTimeout(timerID);
-  }, []);
+  }, [account_type, history, user_id, verification_code]);
 
   return (
     <Fade in={true}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import Profile from "./pages/private/Profile";
 import Navbar from "./components/Navbar";
 import DrawerMenu from "./components/DrawerMenu";
