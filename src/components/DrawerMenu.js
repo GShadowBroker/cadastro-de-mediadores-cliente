@@ -23,6 +23,7 @@ const DrawerHeader = styled.div`
   height: ${(props) => props.height}rem;
   width: 100%;
   min-width: 220px;
+  max-width: 260px;
   margin: 1rem 0;
   padding: 0.5rem;
 
@@ -37,6 +38,15 @@ const DrawerContent = ({ user, handleLogout, toggleDrawer }) => {
 
   if (user) {
     const isCamara = !!user.cnpj;
+
+    const getAccountType = (user) => {
+      if (isCamara) {
+        return "Câmara privada";
+      } else {
+        return user.sex === "feminino" ? "Mediadora" : "Mediador";
+      }
+    };
+
     return (
       <React.Fragment>
         <DrawerHeader height={8}>
@@ -59,7 +69,7 @@ const DrawerContent = ({ user, handleLogout, toggleDrawer }) => {
             {isCamara ? user.nome_fantasia : user.fullname}
           </Typography>
           <Typography variant="caption" color="secondary">
-            {isCamara ? "Câmara privada" : "Mediador"}
+            {getAccountType(user)}
           </Typography>
         </DrawerHeader>
         <List>

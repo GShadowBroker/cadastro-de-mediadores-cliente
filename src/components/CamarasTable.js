@@ -17,6 +17,7 @@ import { getCamarasList } from "../services/mediatorsService";
 import { initCamaras } from "../store/mediatorsReducer";
 import Snackbar from "./utils/Snackbar";
 import errorHandler from "../utils/errorHandler";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
   table: {
@@ -70,16 +71,19 @@ const CamarasTable = () => {
   ) => {
     return { id, nome_fantasia, units, cities, rating, average_value };
   };
-  const rows = camaras.map((c) =>
-    createData(
-      c.id,
-      c.nome_fantasia,
-      c.actuation_units,
-      c.actuation_cities,
-      Math.ceil(Math.random() * 5),
-      c.average_value
-    )
-  );
+  const rows =
+    (camaras &&
+      camaras.map((c) =>
+        createData(
+          c.id,
+          c.nome_fantasia,
+          c.actuation_units,
+          c.actuation_cities,
+          Math.ceil(Math.random() * 5),
+          c.average_value
+        )
+      )) ||
+    [];
 
   const handleChangePage = (event, newPage) => {
     if (newPage > page) {
@@ -155,7 +159,11 @@ const CamarasTable = () => {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  component={Link}
+                  to={`/perfil/publico/camara/${row.id}`}
+                >
                   <TableCell component="th" scope="row">
                     {row.nome_fantasia}
                   </TableCell>

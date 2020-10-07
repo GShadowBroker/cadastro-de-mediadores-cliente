@@ -17,6 +17,7 @@ import { getMediatorsList } from "../services/mediatorsService";
 import { initMediators } from "../store/mediatorsReducer";
 import Snackbar from "./utils/Snackbar";
 import errorHandler from "../utils/errorHandler";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
   table: {
@@ -63,16 +64,22 @@ const MediatorsTable = () => {
   const createData = (id, fullname, units, cities, rating, average_value) => {
     return { id, fullname, units, cities, rating, average_value };
   };
-  const rows = mediators.map((m) =>
-    createData(
-      m.id,
-      m.fullname,
-      m.actuation_units,
-      m.actuation_cities,
-      Math.ceil(Math.random() * 5),
-      m.average_value
-    )
-  );
+
+  if (loading) return <h1>Carregando...</h1>;
+
+  const rows =
+    (mediators &&
+      mediators.map((m) =>
+        createData(
+          m.id,
+          m.fullname,
+          m.actuation_units,
+          m.actuation_cities,
+          Math.ceil(Math.random() * 5),
+          m.average_value
+        )
+      )) ||
+    [];
 
   const handleChangePage = (event, newPage) => {
     if (newPage > page) {
@@ -120,8 +127,6 @@ const MediatorsTable = () => {
       });
   };
 
-  if (loading) return <h1>Carregando...</h1>;
-
   return (
     <React.Fragment>
       <TablePagination
@@ -148,7 +153,11 @@ const MediatorsTable = () => {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  component={Link}
+                  to={`/perfil/publico/mediador/${row.id}`}
+                >
                   <TableCell component="th" scope="row">
                     {row.fullname}
                   </TableCell>

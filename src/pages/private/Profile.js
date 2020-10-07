@@ -44,11 +44,19 @@ const Profile = () => {
   const isCamara = !!loggedUser.cnpj;
   const location = useLocation();
 
+  const getAccountType = (user) => {
+    if (isCamara) {
+      return "Câmara privada";
+    } else {
+      return user.sex === "feminino" ? "Mediadora" : "Mediador";
+    }
+  };
+
   return (
     <Fade in={true}>
       <Container maxWidth="md" style={{ minHeight: "73vh" }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={4} md={3}>
             <SPaper>
               <Header height={11}>
                 <AccountCircle
@@ -60,7 +68,7 @@ const Profile = () => {
                   {isCamara ? loggedUser.nome_fantasia : loggedUser.fullname}
                 </Typography>
                 <Typography variant="caption" color="secondary">
-                  {isCamara ? "Câmara privada" : "Mediador"}
+                  {getAccountType(loggedUser)}
                 </Typography>
                 <Button
                   variant="outlined"
@@ -158,7 +166,7 @@ const Profile = () => {
             </SPaper>
           </Grid>
 
-          <Grid item xs={12} sm={9}>
+          <Grid item xs={12} sm={8} md={9}>
             <SPaper>
               <Switch>
                 <Route path="/perfil/configuracoes">

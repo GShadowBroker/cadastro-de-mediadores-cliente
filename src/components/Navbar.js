@@ -70,7 +70,7 @@ const Navbar = ({ handleLogout, toggleDrawer }) => {
           <IconButton
             edge="start"
             className={classes.menuButton}
-            color="secondary.main"
+            color="secondary"
             aria-label="menu"
             onClick={toggleDrawer}
           >
@@ -79,7 +79,7 @@ const Navbar = ({ handleLogout, toggleDrawer }) => {
           <Typography
             variant="h6"
             className={classes.title}
-            color="secondary.main"
+            color="textSecondary"
           >
             Logo
           </Typography>
@@ -91,7 +91,7 @@ const Navbar = ({ handleLogout, toggleDrawer }) => {
                 aria-controls="menu-appbar-notifications"
                 aria-haspopup="true"
                 onClick={handleNotifications}
-                color="secondary.main"
+                color="secondary"
               >
                 <Badge badgeContent={1} color="primary" variant="dot">
                   <NotificationsNoneIcon />
@@ -120,7 +120,7 @@ const Navbar = ({ handleLogout, toggleDrawer }) => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleMenu}
-                color="secondary.main"
+                color="secondary"
               >
                 <AccountCircle />
               </IconButton>
