@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/registration/Register";
 import Home from "./pages/Home";
+import PrivateRoutes from "./PrivateRoutes";
+import Profile from "./pages/private/Profile";
+import PublicProfile from "./pages/PublicProfileMediator";
 import Navbar from "./components/Navbar";
+import DrawerMenu from "./components/DrawerMenu";
 import Footer from "./components/Footer";
 import Test from "./pages/Test";
 import ValidateEmail from "./pages/registration/ValidateEmail";
@@ -13,9 +17,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./services/authService";
 import { login as runLogin, logout as runLogout } from "./store/authReducer";
 import errorHandler from "./utils/errorHandler";
+import PublicProfileMediator from "./pages/PublicProfileMediator";
+import PublicProfileCamara from "./pages/PublicProfileCamara";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [redirectRoute, setRedirectRoute] = useState("/");
+  const location = useLocation();
 
   const dispatch = useDispatch();
   const session = useSelector((state) => state.authReducer);
@@ -36,10 +45,14 @@ const App = () => {
     }
   }, [session, dispatch]);
 
+  useEffect(() => {
+    if (!["/", "/login", "/registro"].includes(location.pathname)) {
+      setRedirectRoute(location.pathname);
+    }
+  }, []);
+
   const handleLogin = async (data) => {
     setLoading(true);
-    console.log("credenciais", data);
-
     try {
       await login(data);
       const { user } = await getUser();
@@ -60,24 +73,63 @@ const App = () => {
     }
   };
 
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <Switch>
       <Route path="/validar-conta/:account_type/:user_id/:verification_code">
-        <Navbar handleLogout={handleLogout} />
+        <Navbar handleLogout={handleLogout} toggleDrawer={toggleDrawer} />
+        <DrawerMenu
+          handleLogout={handleLogout}
+          drawerOpen={drawerOpen}
+          toggleDrawer={toggleDrawer}
+        />
         <ValidateEmail />
         <Footer />
       </Route>
 
+      <Route path="/perfil/publico/mediador/:id">
+        <React.Fragment>
+          <Navbar handleLogout={handleLogout} toggleDrawer={toggleDrawer} />
+          <DrawerMenu
+            handleLogout={handleLogout}
+            drawerOpen={drawerOpen}
+            toggleDrawer={toggleDrawer}
+          />
+          <PublicProfileMediator />
+          <Footer />
+        </React.Fragment>
+      </Route>
+
+      <Route path="/perfil/publico/camara/:id">
+        <React.Fragment>
+          <Navbar handleLogout={handleLogout} toggleDrawer={toggleDrawer} />
+          <DrawerMenu
+            handleLogout={handleLogout}
+            drawerOpen={drawerOpen}
+            toggleDrawer={toggleDrawer}
+          />
+          <PublicProfileCamara />
+          <Footer />
+        </React.Fragment>
+      </Route>
+
       <Route path="/login">
         {session.isAuthenticated ? (
-          <Redirect to="/perfil" />
+          <Redirect to={redirectRoute} />
         ) : (
           <Login handleLogin={handleLogin} loading={loading} />
         )}
       </Route>
 
       <Route path="/registro">
-        {session.isAuthenticated ? <Redirect to="/perfil" /> : <Register />}
+        {session.isAuthenticated ? (
+          <Redirect to={redirectRoute} />
+        ) : (
+          <Register />
+        )}
       </Route>
 
       <Route path="/test">
@@ -86,18 +138,12 @@ const App = () => {
 
       <Route path="/perfil">
         {session.isAuthenticated ? (
-          <React.Fragment>
-            <Navbar handleLogout={handleLogout} />
-            <div>
-              <h1>You are now logged in!</h1>
-              {loading ? (
-                <button>aguarde...</button>
-              ) : (
-                <button onClick={handleLogout}>logout</button>
-              )}
-            </div>
-            <Footer />
-          </React.Fragment>
+          <PrivateRoutes
+            handleLogout={handleLogout}
+            drawerOpen={drawerOpen}
+            toggleDrawer={toggleDrawer}
+            loading={loading}
+          />
         ) : (
           <Redirect to="/login" />
         )}
@@ -105,7 +151,12 @@ const App = () => {
 
       <Route path="/">
         <React.Fragment>
-          <Navbar handleLogout={handleLogout} />
+          <Navbar handleLogout={handleLogout} toggleDrawer={toggleDrawer} />
+          <DrawerMenu
+            handleLogout={handleLogout}
+            drawerOpen={drawerOpen}
+            toggleDrawer={toggleDrawer}
+          />
           <Home />
           <Footer />
         </React.Fragment>

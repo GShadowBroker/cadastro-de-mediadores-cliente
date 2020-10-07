@@ -10,6 +10,9 @@ export default (error) => {
     }
   } else if (error.request) {
     // client never received a response, or request never left
+    if (error.code === "ECONNABORTED") {
+      return "Tempo de resposta do servidor excedida. Tente de novo mais tarde.";
+    }
     return "Erro de rede. Tente de novo mais tarde.";
   } else {
     // anything else

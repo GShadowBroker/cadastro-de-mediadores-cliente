@@ -60,7 +60,7 @@ const Home = () => {
 
   return (
     <Fade in={true}>
-      <Container maxWidth="md">
+      <Container maxWidth="md" style={{ minHeight: "73vh" }}>
         <Paper className={classes.root}>
           <Tabs
             value={value}
