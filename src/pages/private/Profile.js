@@ -23,6 +23,8 @@ import AttachmentIcon from "@material-ui/icons/Attachment";
 import SettingsIcon from "@material-ui/icons/Settings";
 import colors from "../../constants/colors";
 
+import ProfileMain from "./ProfileMain";
+
 const SPaper = styled(Paper)`
   padding: 1rem 0;
 `;
@@ -168,20 +170,37 @@ const Profile = () => {
 
           <Grid item xs={12} sm={8} md={9}>
             <SPaper>
-              <Switch>
-                <Route path="/perfil/configuracoes">
-                  <div>configuracoes</div>
-                </Route>
-                <Route path="/perfil/notificacoes">
-                  <div>notificações</div>
-                </Route>
-                <Route path="/perfil/documentos">
-                  <div>documentos</div>
-                </Route>
-                <Route path="/perfil">
-                  <div>perfil</div>
-                </Route>
-              </Switch>
+              {isCamara ? (
+                <Switch>
+                  <Route path="/perfil/configuracoes">
+                    <div>configuracoes</div>
+                  </Route>
+                  <Route path="/perfil/notificacoes">
+                    <div>notificações</div>
+                  </Route>
+                  <Route path="/perfil/documentos">
+                    <div>documentos</div>
+                  </Route>
+                  <Route path="/perfil">
+                    <div>perfil</div>
+                  </Route>
+                </Switch>
+              ) : (
+                <Switch>
+                  <Route path="/perfil/configuracoes">
+                    <div>configuracoes</div>
+                  </Route>
+                  <Route path="/perfil/notificacoes">
+                    <div>notificações</div>
+                  </Route>
+                  <Route path="/perfil/documentos">
+                    <div>documentos</div>
+                  </Route>
+                  <Route path="/perfil">
+                    <ProfileMain user={loggedUser} />
+                  </Route>
+                </Switch>
+              )}
             </SPaper>
           </Grid>
         </Grid>

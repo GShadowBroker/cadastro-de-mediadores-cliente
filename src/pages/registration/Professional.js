@@ -388,9 +388,9 @@ const Professional = ({ handleNext, handleBack }) => {
             name="resume"
             label="Minicurrículo"
             type="text"
+            multiline
             variant="outlined"
             defaultValue={professional.resume}
-            multiline
             inputRef={register({ maxLength: 240 })}
             helperText={
               errors.resume &&
