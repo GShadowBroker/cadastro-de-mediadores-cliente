@@ -44,7 +44,7 @@ const MediatorsTable = () => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    if (mediators.length === 0) {
+    if (!mediators || mediators.length === 0) {
       setLoading(true);
       getMediatorsList({ limit, offset })
         .then((data) => {

@@ -44,7 +44,7 @@ const CamarasTable = () => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    if (camaras.length === 0) {
+    if (!camaras || camaras.length === 0) {
       setLoading(true);
       getCamarasList({ limit, offset })
         .then((data) => {
