@@ -24,6 +24,13 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import colors from "../../constants/colors";
 
 import ProfileMain from "./ProfileMain";
+import ProfileDoc from "./ProfileDoc";
+import ProfileNotifications from "./ProfileNotifications";
+import ProfileConfig from "./ProfileConfig";
+import CamaraMain from "./CamaraMain";
+import CamaraDoc from "./CamaraDoc";
+import CamaraNotifications from "./CamaraNotifications";
+import CamaraConfig from "./CamaraConfig";
 
 const SPaper = styled(Paper)`
   padding: 1rem 0;
@@ -173,28 +180,28 @@ const Profile = () => {
               {isCamara ? (
                 <Switch>
                   <Route path="/perfil/configuracoes">
-                    <div>configuracoes</div>
+                    <CamaraConfig user={loggedUser} />
                   </Route>
                   <Route path="/perfil/notificacoes">
-                    <div>notificações</div>
+                    <CamaraNotifications user={loggedUser} />
                   </Route>
                   <Route path="/perfil/documentos">
-                    <div>documentos</div>
+                    <CamaraDoc user={loggedUser} />
                   </Route>
                   <Route path="/perfil">
-                    <div>perfil</div>
+                    <CamaraMain user={loggedUser} />
                   </Route>
                 </Switch>
               ) : (
                 <Switch>
                   <Route path="/perfil/configuracoes">
-                    <div>configuracoes</div>
+                    <ProfileConfig user={loggedUser} />
                   </Route>
                   <Route path="/perfil/notificacoes">
-                    <div>notificações</div>
+                    <ProfileNotifications user={loggedUser} />
                   </Route>
                   <Route path="/perfil/documentos">
-                    <div>documentos</div>
+                    <ProfileDoc user={loggedUser} />
                   </Route>
                   <Route path="/perfil">
                     <ProfileMain user={loggedUser} />

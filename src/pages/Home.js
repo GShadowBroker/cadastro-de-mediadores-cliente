@@ -8,12 +8,14 @@ import {
   Tab,
   Box,
   Fade,
+  Fab,
 } from "@material-ui/core";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
 import CamarasTable from "../components/CamarasTable";
 import MediatorsTable from "../components/MediatorsTable";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
@@ -21,7 +23,10 @@ const useStyles = makeStyles({
     flexGrow: 1,
     margin: "1.5rem 0",
   },
-});
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 const TabPanel = ({ children, value, index, ...other }) => {
   return (
@@ -80,6 +85,15 @@ const Home = () => {
             <CamarasTable />
           </TabPanel>
         </Paper>
+        <Fab
+          variant="extended"
+          style={{ position: "fixed", left: 20, bottom: 30 }}
+          onClick={() => alert("Work in progress!")}
+          color="primary"
+        >
+          <GroupAddIcon className={classes.extendedIcon} />
+          Criar mediação
+        </Fab>
       </Container>
     </Fade>
   );

@@ -19,6 +19,7 @@ import PhoneOutlinedIcon from "@material-ui/icons/PhoneOutlined";
 import PhoneAndroidOutlinedIcon from "@material-ui/icons/PhoneAndroidOutlined";
 import AttachmentIcon from "@material-ui/icons/Attachment";
 import LinkIcon from "@material-ui/icons/Link";
+import PublicProfileMediatorSkeleton from "../components/skeletons/PublicProfileMediatorSkeleton";
 
 import { Rating } from "@material-ui/lab";
 import colors from "../constants/colors";
@@ -82,7 +83,7 @@ const PublicProfileMediator = () => {
     }
   }, [id, session]);
 
-  if (loading) return <h1>CARREGANDO...</h1>;
+  if (loading) return <PublicProfileMediatorSkeleton />;
   if (!user) return <h1>Erro</h1>;
 
   const handleClickLink = () => {

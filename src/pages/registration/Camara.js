@@ -6,9 +6,12 @@ import {
   TextField,
   MenuItem,
   FormHelperText,
+  FormControlLabel,
   Chip,
   Paper,
   Fade,
+  Grid,
+  Switch,
 } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { useForm, Controller } from "react-hook-form";
@@ -23,6 +26,7 @@ import colors from "../../constants/colors";
 import { cnpj, cpf } from "cpf-cnpj-validator";
 import { getAddressByCep } from "../../services/cepService";
 import fileToBase64 from "../../utils/fileToBase64";
+import capitalizeWord from "../../utils/capitalizeWord";
 
 const Form = styled.form`
   display: flex;
@@ -67,6 +71,15 @@ const LoadingContainer = styled.div`
 const Camara = ({ handleNext, handleBack }) => {
   const dispatch = useDispatch();
   const camara = useSelector((state) => state.registrationReducer.camara);
+
+  const [allowMultipleCities, setAllowMultipleCities] = useState(false);
+  const [cityCount, setCityCount] = useState(2);
+
+  const addCity = () => {
+    if (cityCount <= 5 && cityCount >= 2) {
+      setCityCount(cityCount + 1);
+    }
+  };
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -168,7 +181,11 @@ const Camara = ({ handleNext, handleBack }) => {
   const watchActuationUf = watch("actuation_uf");
 
   useEffect(() => {
-    if (watchActuationUf && watchActuationUf !== "selecione") {
+    if (
+      !allowMultipleCities &&
+      watchActuationUf &&
+      watchActuationUf !== "selecione"
+    ) {
       setIsCityDisabled(false);
       setLoadingCities(true);
       getCitiesByUf(watchActuationUf)
@@ -180,7 +197,7 @@ const Camara = ({ handleNext, handleBack }) => {
     } else {
       setIsCityDisabled(true);
     }
-  }, [watchActuationUf]);
+  }, [watchActuationUf, allowMultipleCities]);
 
   const isActuationUnitProvided = () => {
     if (!hasClickedSubmit) return true;
@@ -188,68 +205,154 @@ const Camara = ({ handleNext, handleBack }) => {
   };
 
   const submitStep = async (data) => {
-    const {
-      cnpj,
-      nome_fantasia,
-      razao_social,
-      site,
-      cpf_responsavel,
-      estatuto,
-      nada_consta,
-      average_value,
-      actuation_uf,
-      actuation_city,
-    } = data;
+    if (allowMultipleCities) {
+      const {
+        cnpj,
+        nome_fantasia,
+        razao_social,
+        site,
+        cpf_responsavel,
+        estatuto,
+        nada_consta,
+        average_value,
+        actuation_uf1,
+        actuation_city1,
+      } = data;
 
-    const estatuto_att = estatuto.length > 0 ? estatuto[0] : null;
-    const nada_consta_att = nada_consta.length > 0 ? nada_consta[0] : null;
+      const estatuto_att = estatuto.length > 0 ? estatuto[0] : null;
+      const nada_consta_att = nada_consta.length > 0 ? nada_consta[0] : null;
 
-    let base64_estatuto_att;
-    if (estatuto_att) {
-      base64_estatuto_att = await fileToBase64(estatuto_att);
-    }
-    let base64_nada_consta_att;
-    if (nada_consta_att) {
-      base64_nada_consta_att = await fileToBase64(nada_consta_att);
-    }
+      let base64_estatuto_att;
+      if (estatuto_att) {
+        base64_estatuto_att = await fileToBase64(estatuto_att);
+      }
+      let base64_nada_consta_att;
+      if (nada_consta_att) {
+        base64_nada_consta_att = await fileToBase64(nada_consta_att);
+      }
 
-    if (
-      !cnpj ||
-      !nome_fantasia ||
-      !razao_social ||
-      !cpf_responsavel ||
-      !base64_estatuto_att ||
-      !average_value ||
-      !actuation_uf ||
-      !actuation_city ||
-      units.length === 0
-    ) {
-      setHasClickedSubmit(true);
+      if (
+        !cnpj ||
+        !nome_fantasia ||
+        !razao_social ||
+        !cpf_responsavel ||
+        !base64_estatuto_att ||
+        !average_value ||
+        !actuation_uf1 ||
+        !actuation_city1 ||
+        units.length === 0
+      ) {
+        setHasClickedSubmit(true);
+        return;
+      }
+
+      let actuation_cities = [
+        `${capitalizeWord(actuation_city1)}/${actuation_uf1}`,
+      ];
+      if (data.actuation_city2 && data.actuation_uf2) {
+        actuation_cities.push(
+          `${capitalizeWord(data.actuation_city2)}/${data.actuation_uf2}`
+        );
+      }
+      if (data.actuation_city3 && data.actuation_uf3) {
+        actuation_cities.push(
+          `${capitalizeWord(data.actuation_city3)}/${data.actuation_uf3}`
+        );
+      }
+      if (data.actuation_city4 && data.actuation_uf4) {
+        actuation_cities.push(
+          `${capitalizeWord(data.actuation_city4)}/${data.actuation_uf4}`
+        );
+      }
+      if (data.actuation_city5 && data.actuation_uf5) {
+        actuation_cities.push(
+          `${capitalizeWord(data.actuation_city5)}/${data.actuation_uf5}`
+        );
+      }
+
+      const camaraInfo = {
+        cnpj,
+        nome_fantasia,
+        razao_social,
+        cpf_responsavel,
+        estatuto: base64_estatuto_att || "",
+        nada_consta: base64_nada_consta_att || "",
+        average_value,
+        site,
+        actuation_units: units || [],
+        actuation_cities,
+        cep,
+        address,
+        complement,
+        number: +number,
+        district,
+      };
+      dispatch(submitCamara(camaraInfo));
+      handleNext();
       return;
+    } else {
+      const {
+        cnpj,
+        nome_fantasia,
+        razao_social,
+        site,
+        cpf_responsavel,
+        estatuto,
+        nada_consta,
+        average_value,
+        actuation_uf,
+        actuation_city,
+      } = data;
+
+      const estatuto_att = estatuto.length > 0 ? estatuto[0] : null;
+      const nada_consta_att = nada_consta.length > 0 ? nada_consta[0] : null;
+
+      let base64_estatuto_att;
+      if (estatuto_att) {
+        base64_estatuto_att = await fileToBase64(estatuto_att);
+      }
+      let base64_nada_consta_att;
+      if (nada_consta_att) {
+        base64_nada_consta_att = await fileToBase64(nada_consta_att);
+      }
+
+      if (
+        !cnpj ||
+        !nome_fantasia ||
+        !razao_social ||
+        !cpf_responsavel ||
+        !base64_estatuto_att ||
+        !average_value ||
+        !actuation_uf ||
+        !actuation_city ||
+        units.length === 0
+      ) {
+        setHasClickedSubmit(true);
+        return;
+      }
+
+      const actuation_cities = [`${actuation_city}/${actuation_uf}`];
+
+      const camaraInfo = {
+        cnpj,
+        nome_fantasia,
+        razao_social,
+        cpf_responsavel,
+        estatuto: base64_estatuto_att || "",
+        nada_consta: base64_nada_consta_att || "",
+        average_value,
+        site,
+        actuation_units: units || [],
+        actuation_cities,
+        cep,
+        address,
+        complement,
+        number: +number,
+        district,
+      };
+      dispatch(submitCamara(camaraInfo));
+      handleNext();
     }
-
-    // ATENÇÃO! ADICIONAR FUNCIONALIDADE PARA QUE O USUÁRIO POSSA ADICIONAR MÚLTIPLAS CIDADES!
-    const actuation_cities = [`${actuation_city}/${actuation_uf}`];
-
-    const camaraInfo = {
-      cnpj,
-      nome_fantasia,
-      razao_social,
-      cpf_responsavel,
-      estatuto: base64_estatuto_att || "",
-      nada_consta: base64_nada_consta_att || "",
-      average_value,
-      site,
-      actuation_units: units || [],
-      actuation_cities,
-      cep,
-      address,
-      complement,
-      number: +number,
-      district,
-    };
-    dispatch(submitCamara(camaraInfo));
-    handleNext();
   };
 
   const validateAverageValue = (value) => {
@@ -592,68 +695,343 @@ const Camara = ({ handleNext, handleBack }) => {
         </InputGroup>
 
         <InputGroup>
-          <Controller
-            control={control}
-            as={TextField}
-            id="uf"
-            name="actuation_uf"
-            select
-            label="UF de atuação"
-            defaultValue={camara.actuation_uf || "selecione"}
-            variant="outlined"
-            required
-            rules={{ required: true, validate: enforceSelect }}
-            helperText={
-              errors.actuation_uf && "Selecione uma unidade federativa válida"
+          <FormControlLabel
+            control={
+              <Switch
+                checked={allowMultipleCities}
+                onChange={() => setAllowMultipleCities(!allowMultipleCities)}
+                name="AllowMultipleCities"
+                color="primary"
+              />
             }
-            error={!!errors.actuation_uf}
-            style={{ minWidth: "100%" }}
-          >
-            <MenuItem value="selecione">Selecione</MenuItem>
-            {states.length > 0 &&
-              states.map((state) => (
-                <MenuItem key={state.id} value={state.sigla}>
-                  {state.nome}
-                </MenuItem>
-              ))}
-          </Controller>
+            label="Inserir mais de uma cidade para atuação"
+          />
         </InputGroup>
 
-        {!loadingCities ? (
-          <InputGroup>
-            <Controller
-              control={control}
-              as={TextField}
-              id="city"
-              name="actuation_city"
-              select
-              label="Cidade de atuação"
-              defaultValue={camara.actuation_city || "selecione"}
-              variant="outlined"
-              required
-              rules={{ required: true, validate: enforceSelect }}
-              helperText={
-                errors.actuation_city &&
-                "Selecione uma cidade de atuação válida"
-              }
-              error={!!errors.actuation_city}
-              style={{ minWidth: "100%" }}
-              disabled={isCityDisabled}
-            >
-              <MenuItem value="selecione">Selecione</MenuItem>
-              {cities.length > 0 &&
-                cities.map((city) => (
-                  <MenuItem key={city.id} value={city.nome}>
-                    {city.nome}
-                  </MenuItem>
-                ))}
-            </Controller>
-          </InputGroup>
+        {!allowMultipleCities ? (
+          <React.Fragment>
+            <InputGroup>
+              <Controller
+                control={control}
+                as={TextField}
+                id="uf"
+                name="actuation_uf"
+                select
+                label="UF de atuação"
+                defaultValue={camara.actuation_uf || "selecione"}
+                variant="outlined"
+                required
+                rules={{ required: true, validate: enforceSelect }}
+                helperText={
+                  errors.actuation_uf &&
+                  "Selecione uma unidade federativa válida"
+                }
+                error={!!errors.actuation_uf}
+                style={{ minWidth: "100%" }}
+              >
+                <MenuItem value="selecione">Selecione</MenuItem>
+                {states.length > 0 &&
+                  states.map((state) => (
+                    <MenuItem key={state.id} value={state.sigla}>
+                      {state.nome}
+                    </MenuItem>
+                  ))}
+              </Controller>
+            </InputGroup>
+
+            {!loadingCities ? (
+              <InputGroup>
+                <Controller
+                  control={control}
+                  as={TextField}
+                  id="city"
+                  name="actuation_city"
+                  select
+                  label="Cidade de atuação"
+                  defaultValue={camara.actuation_city || "selecione"}
+                  variant="outlined"
+                  required
+                  rules={{ required: true, validate: enforceSelect }}
+                  helperText={
+                    errors.actuation_city &&
+                    "Selecione uma cidade de atuação válida"
+                  }
+                  error={!!errors.actuation_city}
+                  style={{ minWidth: "100%" }}
+                  disabled={isCityDisabled}
+                >
+                  <MenuItem value="selecione">Selecione</MenuItem>
+                  {cities.length > 0 &&
+                    cities.map((city) => (
+                      <MenuItem key={city.id} value={city.nome}>
+                        {city.nome}
+                      </MenuItem>
+                    ))}
+                </Controller>
+              </InputGroup>
+            ) : (
+              <LoadingContainer>
+                <Spinner size={14} />
+                <span>carregando municípios</span>
+              </LoadingContainer>
+            )}
+          </React.Fragment>
         ) : (
-          <LoadingContainer>
-            <Spinner size={14} />
-            <span>carregando municípios</span>
-          </LoadingContainer>
+          <React.Fragment>
+            <InputGroup>
+              <Grid container spacing={2}>
+                <Grid item xs={4}>
+                  <Controller
+                    control={control}
+                    as={TextField}
+                    id="uf1"
+                    name="actuation_uf1"
+                    select
+                    label="UF 1"
+                    defaultValue={camara.actuation_uf || "selecione"}
+                    variant="outlined"
+                    required
+                    rules={{ required: true, validate: enforceSelect }}
+                    helperText={
+                      errors.actuation_uf1 &&
+                      "Selecione uma unidade federativa válida"
+                    }
+                    error={!!errors.actuation_uf1}
+                    style={{ maxWidth: "100%" }}
+                  >
+                    <MenuItem value="selecione">Selecione</MenuItem>
+                    {states.length > 0 &&
+                      states.map((state) => (
+                        <MenuItem key={state.id} value={state.sigla}>
+                          {state.sigla}
+                        </MenuItem>
+                      ))}
+                  </Controller>
+                </Grid>
+                <Grid item xs={8}>
+                  <TextField
+                    id="city1"
+                    name="actuation_city1"
+                    type="text"
+                    variant="outlined"
+                    label="Cidade 1"
+                    required
+                    inputRef={register({
+                      required: true,
+                      minLength: 2,
+                      maxLength: 155,
+                    })}
+                    helperText={
+                      errors.actuation_city1 &&
+                      "Selecione uma cidade de atuação válida"
+                    }
+                    error={!!errors.actuation_city1}
+                  />
+                </Grid>
+              </Grid>
+            </InputGroup>
+            <InputGroup>
+              <Grid container spacing={2}>
+                <Grid item xs={4}>
+                  <Controller
+                    control={control}
+                    as={TextField}
+                    id="uf"
+                    name="actuation_uf2"
+                    select
+                    label="UF 2"
+                    defaultValue={camara.actuation_uf2 || "selecione"}
+                    variant="outlined"
+                    required
+                    rules={{ required: true, validate: enforceSelect }}
+                    helperText={
+                      errors.actuation_uf2 &&
+                      "Selecione uma unidade federativa válida"
+                    }
+                    error={!!errors.actuation_uf2}
+                    style={{ maxWidth: "100%" }}
+                  >
+                    <MenuItem value="selecione">Selecione</MenuItem>
+                    {states.length > 0 &&
+                      states.map((state) => (
+                        <MenuItem key={state.id} value={state.sigla}>
+                          {state.sigla}
+                        </MenuItem>
+                      ))}
+                  </Controller>
+                </Grid>
+                <Grid item xs={8}>
+                  <TextField
+                    id="city2"
+                    name="actuation_city2"
+                    type="text"
+                    variant="outlined"
+                    label="Cidade 2"
+                    required
+                    inputRef={register({ required: true, maxLength: 155 })}
+                    helperText={
+                      errors.actuation_city2 &&
+                      "Selecione uma cidade de atuação válida"
+                    }
+                    error={!!errors.actuation_city2}
+                  />
+                </Grid>
+              </Grid>
+            </InputGroup>
+            {cityCount >= 3 && (
+              <InputGroup>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Controller
+                      control={control}
+                      as={TextField}
+                      id="uf"
+                      name="actuation_uf3"
+                      select
+                      label="UF 3"
+                      defaultValue={camara.actuation_uf3 || "selecione"}
+                      variant="outlined"
+                      required
+                      rules={{ required: true, validate: enforceSelect }}
+                      helperText={
+                        errors.actuation_uf3 &&
+                        "Selecione uma unidade federativa válida"
+                      }
+                      error={!!errors.actuation_uf3}
+                      style={{ maxWidth: "100%" }}
+                    >
+                      <MenuItem value="selecione">Selecione</MenuItem>
+                      {states.length > 0 &&
+                        states.map((state) => (
+                          <MenuItem key={state.id} value={state.sigla}>
+                            {state.sigla}
+                          </MenuItem>
+                        ))}
+                    </Controller>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <TextField
+                      id="city3"
+                      name="actuation_city3"
+                      type="text"
+                      variant="outlined"
+                      label="Cidade 3"
+                      required
+                      inputRef={register({ required: true, maxLength: 155 })}
+                      helperText={
+                        errors.actuation_city3 &&
+                        "Selecione uma cidade de atuação válida"
+                      }
+                      error={!!errors.actuation_city3}
+                    />
+                  </Grid>
+                </Grid>
+              </InputGroup>
+            )}
+            {cityCount >= 4 && (
+              <InputGroup>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Controller
+                      control={control}
+                      as={TextField}
+                      id="uf"
+                      name="actuation_uf4"
+                      select
+                      label="UF 4"
+                      defaultValue={camara.actuation_uf4 || "selecione"}
+                      variant="outlined"
+                      required
+                      rules={{ required: true, validate: enforceSelect }}
+                      helperText={
+                        errors.actuation_uf4 &&
+                        "Selecione uma unidade federativa válida"
+                      }
+                      error={!!errors.actuation_uf4}
+                      style={{ maxWidth: "100%" }}
+                    >
+                      <MenuItem value="selecione">Selecione</MenuItem>
+                      {states.length > 0 &&
+                        states.map((state) => (
+                          <MenuItem key={state.id} value={state.sigla}>
+                            {state.sigla}
+                          </MenuItem>
+                        ))}
+                    </Controller>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <TextField
+                      id="city4"
+                      name="actuation_city4"
+                      type="text"
+                      variant="outlined"
+                      label="Cidade 4"
+                      required
+                      inputRef={register({ required: true, maxLength: 155 })}
+                      helperText={
+                        errors.actuation_city4 &&
+                        "Selecione uma cidade de atuação válida"
+                      }
+                      error={!!errors.actuation_city4}
+                    />
+                  </Grid>
+                </Grid>
+              </InputGroup>
+            )}
+            {cityCount >= 5 && (
+              <InputGroup>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Controller
+                      control={control}
+                      as={TextField}
+                      id="uf"
+                      name="actuation_uf5"
+                      select
+                      label="UF 5"
+                      defaultValue={camara.actuation_uf5 || "selecione"}
+                      variant="outlined"
+                      required
+                      rules={{ required: true, validate: enforceSelect }}
+                      helperText={
+                        errors.actuation_uf5 &&
+                        "Selecione uma unidade federativa válida"
+                      }
+                      error={!!errors.actuation_uf5}
+                      style={{ maxWidth: "100%" }}
+                    >
+                      <MenuItem value="selecione">Selecione</MenuItem>
+                      {states.length > 0 &&
+                        states.map((state) => (
+                          <MenuItem key={state.id} value={state.sigla}>
+                            {state.sigla}
+                          </MenuItem>
+                        ))}
+                    </Controller>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <TextField
+                      id="city5"
+                      name="actuation_city5"
+                      type="text"
+                      variant="outlined"
+                      label="Cidade 5"
+                      required
+                      inputRef={register({ required: true, maxLength: 155 })}
+                      helperText={
+                        errors.actuation_city5 &&
+                        "Selecione uma cidade de atuação válida"
+                      }
+                      error={!!errors.actuation_city5}
+                    />
+                  </Grid>
+                </Grid>
+              </InputGroup>
+            )}
+            <Button onClick={addCity} disabled={cityCount === 5}>
+              + Adicionar outra cidade
+            </Button>
+          </React.Fragment>
         )}
 
         <InputGroup>

@@ -18,6 +18,7 @@ import { initCamaras } from "../store/mediatorsReducer";
 import Snackbar from "./utils/Snackbar";
 import errorHandler from "../utils/errorHandler";
 import { Link } from "react-router-dom";
+import TableSkeleton from "./skeletons/TableSkeleton";
 
 const useStyles = makeStyles({
   table: {
@@ -131,7 +132,7 @@ const CamarasTable = () => {
       });
   };
 
-  if (loading) return <h1>Carregando...</h1>;
+  if (loading) return <TableSkeleton />;
 
   return (
     <React.Fragment>

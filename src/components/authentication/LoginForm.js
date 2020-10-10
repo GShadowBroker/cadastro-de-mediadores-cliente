@@ -34,7 +34,7 @@ const ForgotPassword = styled.div`
 
 const ActionGroup = styled(InputGroup)``;
 
-const LoginForm = ({ handleLogin, loading }) => {
+const LoginForm = ({ handleLogin, loading, loginError }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { register, errors, handleSubmit } = useForm();
 
@@ -83,8 +83,10 @@ const LoginForm = ({ handleLogin, loading }) => {
             required: true,
             pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
           })}
-          helperText={errors.email && getErrorMessageEmail(errors.email)}
-          error={!!errors.email}
+          helperText={
+            (errors.email && getErrorMessageEmail(errors.email)) || loginError
+          }
+          error={!!errors.email || !!loginError}
         />
       </InputGroup>
       <InputGroup>
@@ -109,9 +111,10 @@ const LoginForm = ({ handleLogin, loading }) => {
           size="small"
           inputRef={register({ required: true, maxLength: 55, minLength: 6 })}
           helperText={
-            errors.password && getErrorMessagePassword(errors.password)
+            (errors.password && getErrorMessagePassword(errors.password)) ||
+            loginError
           }
-          error={!!errors.password}
+          error={!!errors.password || !!loginError}
         />
         <ForgotPassword>
           <Link to="/recuperar_senha">Esqueceu a senha?</Link>

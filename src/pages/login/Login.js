@@ -109,7 +109,7 @@ const OrLine = styled.div`
   }
 `;
 
-const Login = ({ handleLogin, loading }) => {
+const Login = ({ handleLogin, loading, loginError }) => {
   return (
     <Fade in={true}>
       <Wrapper>
@@ -125,7 +125,11 @@ const Login = ({ handleLogin, loading }) => {
               <SubHeader>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit
               </SubHeader>
-              <LoginForm handleLogin={handleLogin} loading={loading} />
+              <LoginForm
+                handleLogin={handleLogin}
+                loading={loading}
+                loginError={loginError}
+              />
               <OrLine>
                 <span>ou</span>
               </OrLine>

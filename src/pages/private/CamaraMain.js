@@ -13,6 +13,7 @@ import {
   Paper,
   Button,
   Fade,
+  Divider,
 } from "@material-ui/core";
 import styled from "styled-components";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -44,11 +45,11 @@ const ProfileMain = ({ user }) => {
         <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
           <Grid item sm={6}>
             <TextField
-              id="fullname"
+              id="nome_fantasia"
               variant="outlined"
-              label="Nome completo"
+              label="Nome fantasia"
               InputLabelProps={{ shrink: true }}
-              defaultValue={user.fullname}
+              defaultValue={user.nome_fantasia}
               size="small"
               disabled
               fullWidth
@@ -56,43 +57,11 @@ const ProfileMain = ({ user }) => {
           </Grid>
           <Grid item sm={6}>
             <TextField
-              id="cpf"
+              id="razao_social"
               variant="outlined"
-              label="CPF"
+              label="Razão social"
               InputLabelProps={{ shrink: true }}
-              defaultValue={user.cpf}
-              size="small"
-              disabled
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
-          <Grid item sm={6}>
-            <TextField
-              id="sex"
-              variant="outlined"
-              label="Sexo"
-              select
-              InputLabelProps={{ shrink: true }}
-              defaultValue={user.sex}
-              size="small"
-              disabled
-              fullWidth
-            >
-              <MenuItem value="feminino">Feminino</MenuItem>
-              <MenuItem value="masculino">Masculino</MenuItem>
-            </TextField>
-          </Grid>
-          <Grid item sm={6}>
-            <TextField
-              id="born"
-              variant="outlined"
-              label="Data de nascimento"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              defaultValue={user.born}
+              defaultValue={user.razao_social}
               size="small"
               disabled
               fullWidth
@@ -103,19 +72,42 @@ const ProfileMain = ({ user }) => {
         <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
           <Grid item sm={6}>
             <TextField
-              id="certification"
+              id="cnpj"
               variant="outlined"
-              label="Certificação"
-              select
+              label="CNPJ"
               InputLabelProps={{ shrink: true }}
-              defaultValue={user.certification}
+              defaultValue={user.cnpj}
               size="small"
               disabled
               fullWidth
-            >
-              <MenuItem value="certificado">Certificado</MenuItem>
-              <MenuItem value="em_formacao">Em formação</MenuItem>
-            </TextField>
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              id="cpf_responsavel"
+              variant="outlined"
+              label="CPF do responsável"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.cpf_responsavel}
+              size="small"
+              disabled
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
+          <Grid item sm={6}>
+            <TextField
+              id="site"
+              variant="outlined"
+              label="Website"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.site}
+              size="small"
+              disabled
+              fullWidth
+            />
           </Grid>
           <Grid item sm={6}>
             <TextField
@@ -129,88 +121,11 @@ const ProfileMain = ({ user }) => {
               disabled
               fullWidth
             >
-              <MenuItem value="voluntario">Voluntário</MenuItem>
               <MenuItem value="$">Patamar Básico</MenuItem>
               <MenuItem value="$$">Patamar Intermediário</MenuItem>
               <MenuItem value="$$$">Patamar Avançado</MenuItem>
               <MenuItem value="$$$$">Patamar Extraordinário</MenuItem>
             </TextField>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
-          <Grid item sm={6}>
-            <Grid container>
-              <Grid item sm={12} style={{ marginBottom: "2rem" }}>
-                <TextField
-                  id="lattes"
-                  variant="outlined"
-                  label="currículo lattes"
-                  InputLabelProps={{ shrink: true }}
-                  defaultValue={user.lattes}
-                  size="small"
-                  disabled
-                  fullWidth
-                />
-              </Grid>
-              <Grid item sm={12}>
-                <FormGroup>
-                  <FormControl>
-                    <FormLabel component="legend">Especialidades</FormLabel>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          name="civel"
-                          color="primary"
-                          size="small"
-                          disabled
-                        />
-                      }
-                      label="Cível"
-                      checked={user.specialization.includes("civel")}
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          name="familia"
-                          color="primary"
-                          size="small"
-                          disabled
-                        />
-                      }
-                      label="Família"
-                      checked={user.specialization.includes("familia")}
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          name="empresarial"
-                          color="primary"
-                          size="small"
-                          disabled
-                        />
-                      }
-                      label="Empresarial"
-                      checked={user.specialization.includes("empresarial")}
-                    />
-                  </FormControl>
-                </FormGroup>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item sm={6}>
-            <TextField
-              id="mini-curriculo"
-              variant="outlined"
-              label="Mini-currículo"
-              type="text"
-              multiline
-              InputLabelProps={{ shrink: true }}
-              defaultValue={user.resume}
-              size="small"
-              disabled
-              fullWidth
-            />
           </Grid>
         </Grid>
 
@@ -238,6 +153,75 @@ const ProfileMain = ({ user }) => {
                 ))}
               </ChipPaper>
             )}
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
+          <Grid item sm={6}>
+            <TextField
+              id="cep"
+              variant="outlined"
+              label="CEP"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.cep}
+              size="small"
+              disabled
+              fullWidth
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              id="address"
+              variant="outlined"
+              label="Endereço"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.address}
+              size="small"
+              disabled
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
+          <Grid item sm={6}>
+            <TextField
+              id="complement"
+              variant="outlined"
+              label="Complemento"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.complement}
+              size="small"
+              disabled
+              fullWidth
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              id="number"
+              variant="outlined"
+              label="Número"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.number}
+              size="small"
+              disabled
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={5} style={{ marginBottom: "1rem" }}>
+          <Grid item sm={6}>
+            <TextField
+              id="district"
+              variant="outlined"
+              label="Bairro"
+              InputLabelProps={{ shrink: true }}
+              defaultValue={user.district}
+              size="small"
+              disabled
+              fullWidth
+            />
           </Grid>
         </Grid>
 

@@ -16,9 +16,13 @@ import { login as runLogin, logout as runLogout } from "./store/authReducer";
 import errorHandler from "./utils/errorHandler";
 import PublicProfileMediator from "./pages/PublicProfileMediator";
 import PublicProfileCamara from "./pages/PublicProfileCamara";
+import LoadingScreen from "./components/utils/LoadingScreen";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
+  const [appLoading, setAppLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [redirectRoute, setRedirectRoute] = useState("/");
   const location = useLocation();
@@ -32,9 +36,11 @@ const App = () => {
       getUser()
         .then(({ user }) => {
           dispatch(runLogin(user));
+          setAppLoading(false);
           setLoading(false);
         })
         .catch((err) => {
+          setAppLoading(false);
           setLoading(false);
           console.log(errorHandler(err));
           console.error(err);
@@ -50,6 +56,7 @@ const App = () => {
 
   const handleLogin = async (data) => {
     setLoading(true);
+    setLoginError("");
     try {
       await login(data);
       const { user } = await getUser();
@@ -57,6 +64,7 @@ const App = () => {
       setLoading(false);
     } catch (err) {
       console.error(err);
+      setLoginError(errorHandler(err));
       setLoading(false);
     }
   };
@@ -73,6 +81,8 @@ const App = () => {
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
+
+  if (appLoading) return <LoadingScreen />;
 
   return (
     <Switch>
@@ -117,7 +127,11 @@ const App = () => {
         {session.isAuthenticated ? (
           <Redirect to={redirectRoute} />
         ) : (
-          <Login handleLogin={handleLogin} loading={loading} />
+          <Login
+            handleLogin={handleLogin}
+            loading={loading}
+            loginError={loginError}
+          />
         )}
       </Route>
 
