@@ -31,7 +31,7 @@
     "test:update": "react-scripts test --updateSnapshot",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://127.0.0.1:8000",
+  "proxy": "https://cadastro-de-mediadores.herokuapp.com",
   "eslintConfig": {
     "extends": "react-app"
   },

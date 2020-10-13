@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const endpoint = "/api";
-const fullEndpoint = "http://127.0.0.1:8000/api";
+const fullEndpoint = "https://cadastro-de-mediadores.herokuapp.com/api";
 const timeout = 15000;
 
 export const getMediatorsList = async ({ limit, offset }) => {
