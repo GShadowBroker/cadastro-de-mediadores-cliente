@@ -1,5 +1,6 @@
 const initialState = {
   accountType: "mediador",
+  recaptchaValue: "",
   personal: {
     cpf: "",
     fullname: "",

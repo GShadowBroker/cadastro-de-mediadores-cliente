@@ -18,6 +18,7 @@ import { registerMediator, registerCamara } from "../../services/authService";
 import Spinner from "../../components/utils/Spinner";
 import errorHandler from "../../utils/errorHandler";
 import Snackbar from "../../components/utils/Snackbar";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Form = styled.form`
   display: flex;
@@ -44,6 +45,8 @@ const Finish = ({ handleNext, handleBack }) => {
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
 
+  const [recaptchaValue, setRecaptchaValue] = useState(null);
+
   const dispatch = useDispatch();
   const confirm = useSelector((state) => state.registrationReducer.confirm);
   const form = useSelector((state) => state.registrationReducer);
@@ -52,10 +55,11 @@ const Finish = ({ handleNext, handleBack }) => {
   const { register, handleSubmit, errors, watch } = useForm();
 
   const watchAccept = watch("acceptTerms");
+  const watchPassword = watch("password");
 
   const submitStep = (data) => {
     const { password, acceptTerms } = data;
-    if (!password || !acceptTerms) return;
+    if (!password || !acceptTerms || !recaptchaValue) return;
     const confirmInfo = {
       ...data,
     };
@@ -81,6 +85,7 @@ const Finish = ({ handleNext, handleBack }) => {
         cellphone: form.contact.cellphone,
         password,
         acceptTerms,
+        recaptchaValue,
       };
       setLoading(true);
       console.log("filledForm", filledForm);
@@ -125,6 +130,7 @@ const Finish = ({ handleNext, handleBack }) => {
         cellphone: form.contact.cellphone,
         password,
         acceptTerms,
+        recaptchaValue,
       };
       setLoading(true);
       console.log("filledForm", filledForm);
@@ -224,6 +230,15 @@ const Finish = ({ handleNext, handleBack }) => {
           />
         </InputGroup>
 
+        <InputGroup>
+          <ReCAPTCHA
+            sitekey={process.env.REACT_APP_RSITE_KEY}
+            onChange={(value) => {
+              setRecaptchaValue(value);
+            }}
+          />
+        </InputGroup>
+
         <ActionGroup>
           <Button onClick={handleBack}>Voltar</Button>
 
@@ -238,7 +253,7 @@ const Finish = ({ handleNext, handleBack }) => {
               color="primary"
               type="submit"
               style={{ marginLeft: "1.5rem" }}
-              disabled={!watchAccept}
+              disabled={!watchAccept || !recaptchaValue || !watchPassword}
             >
               Concluir e salvar
             </Button>
