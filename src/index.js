@@ -31,6 +31,13 @@ const theme = createMuiTheme(
         contrastText: colors.light.error.contrastText,
       },
     },
+    overrides: {
+      MuiTableRow: {
+        root: {
+          cursor: "pointer",
+        },
+      },
+    },
   },
   ptBR
 );

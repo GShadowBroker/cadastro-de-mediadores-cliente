@@ -19,6 +19,7 @@ import PublicProfileCamara from "./pages/PublicProfileCamara";
 import LoadingScreen from "./components/utils/LoadingScreen";
 
 const App = () => {
+  console.log("app rendering...");
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
 

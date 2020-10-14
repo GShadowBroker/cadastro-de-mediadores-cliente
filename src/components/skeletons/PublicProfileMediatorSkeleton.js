@@ -54,8 +54,8 @@ const PublicProfileMediatorSkeleton = () => {
                 </ContactContainer>
                 <Divider />
                 <ButtonsContainer>
-                  <Skeleton variant="text" height={35} fullWidth />
-                  <Skeleton variant="text" height={35} fullWidth />
+                  <Skeleton variant="text" height={35} />
+                  <Skeleton variant="text" height={35} />
                 </ButtonsContainer>
               </SPaper>
             </Grid>
@@ -141,7 +141,6 @@ const PublicProfileMediatorSkeleton = () => {
                     />
                     <Skeleton
                       variant="rect"
-                      fullWidth
                       height={100}
                       style={{ marginLeft: "1rem" }}
                     />

@@ -1,88 +1,77 @@
 import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Paper,
-  makeStyles,
-  Fade,
-} from "@material-ui/core";
+import { Fade } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  root: {
-    flexGrow: 1,
-    margin: "1rem 0",
-  },
-});
+import MUIDataTable from "mui-datatables";
 
 const MediatorsTable = () => {
-  const classes = useStyles();
+  const columns = [
+    "Nome",
+    "Unidades de atuação",
+    "Cidades de atuação",
+    "Qualificação",
+    "Valor médio",
+  ];
+  const data = Array.from(Array(40).keys()).map((m, index) => [
+    <Skeleton key={index} variant="text" width={100} />,
+    <Skeleton key={index} variant="text" width={100} />,
+    <Skeleton key={index} variant="text" width={100} />,
+    <Skeleton key={index} variant="text" width={100} />,
+    <Skeleton key={index} variant="text" width={100} />,
+  ]);
+  const options = {
+    filterType: "checkbox",
+    responsive: "simple",
+    elevation: 0,
+    textLabels: {
+      body: {
+        noMatch: "Desculpe, nenhum resultado encontrado",
+        toolTip: "Ordenar",
+        columnHeaderTooltip: (column) => `Ordenar por ${column.label}`,
+      },
+      pagination: {
+        next: "Próxima página",
+        previous: "Página anterior",
+        rowsPerPage: "Linhas por página:",
+        displayRows: "de",
+      },
+      toolbar: {
+        search: "Pesquisar",
+        downloadCsv: "Baixar CSV",
+        print: "Imprimir",
+        viewColumns: "Mostrar Colunas",
+        filterTable: "Filtrar Tabela",
+      },
+      filter: {
+        all: "Tudo",
+        title: "FILTROS",
+        reset: "RESETAR",
+      },
+      viewColumns: {
+        title: "Mostrar Colunas",
+        titleAria: "Mostrar/Esconder Colunas da Tabela",
+      },
+      selectedRows: {
+        text: "linha(s) selecionado(s)",
+        delete: "Excluir",
+        deleteAria: "Excluir Linhas Selecionadas",
+      },
+    },
+    page: 0,
+    count: 40,
+    rowsPerPage: 40,
+    rowsPerPageOptions: [40, 60, 100],
+  };
+
   return (
     <React.Fragment>
-      <TablePagination
-        rowsPerPageOptions={[40, 60, 100]}
-        labelRowsPerPage="Ítens por página"
-        component="div"
-        count={40}
-        page={0}
-        onChangePage={() => {}}
-        rowsPerPage={40}
-        onChangeRowsPerPage={() => {}}
-      />
       <Fade in={true}>
-        <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Nome</TableCell>
-                <TableCell align="right">Unidades de atuação</TableCell>
-                <TableCell align="right">Cidades de atuação</TableCell>
-                <TableCell align="right">Qualificação</TableCell>
-                <TableCell align="right">Valor Médio</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array.from(Array(40).keys()).map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    <Skeleton variant="text" width={100} />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Skeleton variant="text" width={100} />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Skeleton variant="text" width={100} />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Skeleton variant="text" width={100} />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Skeleton variant="text" width={100} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <MUIDataTable
+          title={<Skeleton variant="text" width={150} height={35} />}
+          data={data}
+          columns={columns}
+          options={options}
+        />
       </Fade>
-      <TablePagination
-        rowsPerPageOptions={[40, 60, 100]}
-        labelRowsPerPage="Ítens por página"
-        component="div"
-        count={40}
-        page={0}
-        onChangePage={() => {}}
-        rowsPerPage={40}
-        onChangeRowsPerPage={() => {}}
-      />
     </React.Fragment>
   );
 };

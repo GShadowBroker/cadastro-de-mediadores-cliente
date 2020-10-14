@@ -4,7 +4,8 @@ const endpoint = "/api";
 const baseUrl = "https://cadastro-de-mediadores.herokuapp.com/api";
 const timeout = 15000;
 
-export const getMediatorsList = async ({ limit, offset }) => {
+export const getMediatorsList = async ({ limit, offset, ...filters }) => {
+  console.log("filters", filters);
   const result = await axios.get(`${endpoint}/mediadores`, {
     params: { limit, offset },
     timeout,
@@ -12,7 +13,7 @@ export const getMediatorsList = async ({ limit, offset }) => {
   return result.data;
 };
 
-export const getCamarasList = async ({ limit, offset }) => {
+export const getCamarasList = async ({ limit, offset, ...filters }) => {
   const result = await axios.get(`${endpoint}/camaras`, {
     params: { limit, offset },
     timeout,
