@@ -3,5 +3,5 @@
 /api/autenticacao/registrar/* https://cadastro-de-mediadores.herokuapp.com/api/autenticacao/registrar/:splat 200
 /api/autenticacao/* https://cadastro-de-mediadores.herokuapp.com/api/autenticacao/:splat 200
 /api/user https://cadastro-de-mediadores.herokuapp.com/api/user 200
-/api/*  https://cadastro-de-mediadores.herokuapp.com/:splat  200
+/api/*  https://cadastro-de-mediadores.herokuapp.com/api/:splat  200
 /*  /index.html  200
