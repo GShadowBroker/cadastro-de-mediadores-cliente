@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const endpoint =
-  "https://cadastro-de-mediadores.herokuapp.com/api/autenticacao";
+const endpoint = "/api/autenticacao";
+const baseUrl = "/api";
 const timeout = 15000;
 
 export const login = async (credentials) => {
@@ -17,7 +17,7 @@ export const logout = async () => {
 };
 
 export const getUser = async () => {
-  const result = await axios.get("/api/user", { timeout });
+  const result = await axios.get(`${baseUrl}/user`, { timeout });
   return result.data;
 };
 

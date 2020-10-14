@@ -6,6 +6,7 @@ const initialState = {
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case "LOGIN":
+      if (!action.user) return state;
       return { isAuthenticated: true, user: action.user };
     case "LOGOUT":
       return { isAuthenticated: false, user: null };

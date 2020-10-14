@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const endpoint = "https://cadastro-de-mediadores.herokuapp.com/api";
+const endpoint = "/api";
+const baseUrl = "https://cadastro-de-mediadores.herokuapp.com/api";
 const timeout = 15000;
 
 export const getMediatorsList = async ({ limit, offset }) => {
@@ -30,13 +31,13 @@ export const getCamara = async (id) => {
 };
 
 export const getAttachment = (id) => {
-  window.open(`${endpoint}/mediadores/${id}/visualizar_anexo`);
+  window.open(`${baseUrl}/mediadores/${id}/visualizar_anexo`);
 };
 
 export const getEstatuto = (id) => {
-  window.open(`${endpoint}/camaras/${id}/visualizar_estatuto`);
+  window.open(`${baseUrl}/camaras/${id}/visualizar_estatuto`);
 };
 
 export const getNadaConsta = (id) => {
-  window.open(`${endpoint}/camaras/${id}/visualizar_nada_consta`);
+  window.open(`${baseUrl}/camaras/${id}/visualizar_nada_consta`);
 };

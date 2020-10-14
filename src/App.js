@@ -32,9 +32,11 @@ const App = () => {
 
   useEffect(() => {
     if (!session.isAuthenticated) {
+      console.log("running useEffect hook for getUser");
       setLoading(true);
       getUser()
         .then(({ user }) => {
+          console.log("fetched user", user);
           dispatch(runLogin(user));
           setAppLoading(false);
           setLoading(false);
