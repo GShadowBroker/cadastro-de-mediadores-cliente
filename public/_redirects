@@ -1,2 +1,7 @@
+/api/autenticacao/login https://cadastro-de-mediadores.herokuapp.com/api/autenticacao/login 200
+/api/autenticacao/logout https://cadastro-de-mediadores.herokuapp.com/api/autenticacao/logout 200
+/api/autenticacao/registrar/* https://cadastro-de-mediadores.herokuapp.com/api/autenticacao/registrar/:splat 200
+/api/autenticacao/* https://cadastro-de-mediadores.herokuapp.com/api/autenticacao/:splat 200
+/api/user https://cadastro-de-mediadores.herokuapp.com/api/user 200
+/api/*  https://cadastro-de-mediadores.herokuapp.com/:splat  200
 /*  /index.html  200
-/api/*  https://cadastro-de-mediadores.herokuapp.com/  200
