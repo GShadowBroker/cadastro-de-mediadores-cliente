@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Fade } from "@material-ui/core";
+import { Fade, InputBase, IconButton, Button } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import CloseIcon from "@material-ui/icons/Close";
 import { Rating } from "@material-ui/lab";
 import MUIDataTable from "mui-datatables";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,11 +11,12 @@ import Snackbar from "./utils/Snackbar";
 import errorHandler from "../utils/errorHandler";
 import { useHistory } from "react-router-dom";
 import TableSkeleton from "./skeletons/TableSkeleton";
+import Spinner from "./utils/Spinner";
 
 const MediatorsTable = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
-  const [timeoutState, setTimeoutState] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
 
@@ -26,22 +29,28 @@ const MediatorsTable = () => {
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    if (!mediators || mediators.length === 0) {
-      setLoading(true);
-      getMediatorsList({ limit, offset })
-        .then((data) => {
-          dispatch(initMediators(data.rows, data.count));
-          setLoading(false);
-        })
-        .catch((err) => {
-          setLoading(false);
-          setSnackOpen(true);
-          setSnackMessage(errorHandler(err));
-        });
-    }
-  }, [mediators, dispatch, limit, offset, page]);
+  useEffect(
+    () => {
+      if (!mediators || mediators.length === 0) {
+        setLoading(true);
+        getMediatorsList({ limit, offset })
+          .then((data) => {
+            dispatch(initMediators(data.rows, data.count));
+            setLoading(false);
+          })
+          .catch((err) => {
+            setLoading(false);
+            setSnackOpen(true);
+            setSnackMessage(errorHandler(err));
+          });
+      }
+    },
+    [
+      /* mediators, dispatch, limit, offset */
+    ] // eslint-disable-line
+  );
 
   if (loading) return <TableSkeleton />;
 
@@ -127,7 +136,7 @@ const MediatorsTable = () => {
       // Next page
       const nextOffset = offset + limit;
       setPage(newPage);
-      getMediatorsList({ limit, offset: nextOffset })
+      getMediatorsList({ limit, offset: nextOffset, fullname: searchTerm })
         .then((data) => {
           dispatch(initMediators(data.rows, data.count));
           setOffset(nextOffset);
@@ -143,7 +152,7 @@ const MediatorsTable = () => {
       // Previous page
       const prevOffset = offset - limit;
       setPage(newPage);
-      getMediatorsList({ limit, offset: prevOffset })
+      getMediatorsList({ limit, offset: prevOffset, fullname: searchTerm })
         .then((data) => {
           dispatch(initMediators(data.rows, data.count));
           setOffset(prevOffset);
@@ -163,7 +172,7 @@ const MediatorsTable = () => {
     setOffset(0);
     setPage(0);
     setLimit(newRowsPerPage);
-    getMediatorsList({ limit: newRowsPerPage, offset: 0 })
+    getMediatorsList({ limit: newRowsPerPage, offset: 0, fullname: searchTerm })
       .then((data) => {
         dispatch(initMediators(data.rows, data.count));
         setLoading(false);
@@ -176,50 +185,30 @@ const MediatorsTable = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSearch = (search) => {
-    if (!search) {
-      clearTimeout(timeoutState);
-      setTimeoutState(null);
-      return;
-    }
-
-    let timeoutId;
-    if (!timeoutState) {
-      timeoutId = setTimeout(() => {
-        // Action after user stops typing
-        console.log("searching for", search); //network request
-        setTimeoutState(null);
-        /* fetchMembers({
-          variables: {
-            communityId,
-            filter: search,
-            random: false,
-            limit,
-            offset,
-          },
-        }); */
-      }, 2000);
-      setTimeoutState(timeoutId);
-    } else {
-      clearTimeout(timeoutState);
-      setTimeoutState(null);
-
-      timeoutId = setTimeout(() => {
-        // Action after user stops typing
-        console.log("searching for", search); //network request
-        setTimeoutState(null);
-        /* fetchMembers({
-          variables: {
-            communityId,
-            filter: search,
-            random: false,
-            limit,
-            offset,
-          },
-        }); */
-      }, 2000);
-      setTimeoutState(timeoutId);
-    }
+  const handleSearchClick = (search) => {
+    setSearchLoading(true);
+    getMediatorsList({ limit, offset: 0, fullname: search })
+      .then((data) => {
+        dispatch(initMediators(data.rows, data.count));
+        setSearchLoading(false);
+      })
+      .catch((err) => {
+        setSnackOpen(true);
+        setSnackMessage(errorHandler(err));
+        setSearchLoading(false);
+      });
+  };
+  const handleSearchClear = () => {
+    setSearchTerm("");
+    setPage(0);
+    getMediatorsList({ limit, offset: 0 })
+      .then((data) => {
+        dispatch(initMediators(data.rows, data.count));
+      })
+      .catch((err) => {
+        setSnackOpen(true);
+        setSnackMessage(errorHandler(err));
+      });
   };
 
   const options = {
@@ -281,13 +270,37 @@ const MediatorsTable = () => {
           break;
       }
     },
-    /* onSearchChange: (searchText) => setSearch(searchText), */
-    searchProps: {
-      onBlur: (e) => {},
-      onKeyUp: (e) => {
-        handleSearch(e.target.value);
-      },
-    },
+    customSearchRender: (searchText, handleSearch, hideSearch, options) => (
+      <div>
+        <IconButton>
+          <SearchIcon />
+        </IconButton>
+        <InputBase
+          placeholder="Pesquisar mediador"
+          inputProps={{ "aria-label": "pesquisar por mediador" }}
+          value={searchTerm}
+          onChange={({ target }) => setSearchTerm(target.value)}
+        />
+        <IconButton onClick={handleSearchClear} disabled={!searchTerm}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+        {searchLoading ? (
+          <Button variant="contained" disabled>
+            <Spinner />
+            <span style={{ marginLeft: 5 }}>processando</span>
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => handleSearchClick(searchTerm)}
+            disabled={!searchTerm}
+          >
+            Pesquisar
+          </Button>
+        )}
+      </div>
+    ),
+    searchOpen: !!searchTerm,
     onRowClick: (rowData, rowMeta) => {
       history.push(
         `/perfil/publico/mediador/${mediators[+rowMeta.dataIndex].id}`
