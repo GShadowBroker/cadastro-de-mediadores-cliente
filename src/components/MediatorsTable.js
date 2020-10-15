@@ -31,26 +31,21 @@ const MediatorsTable = () => {
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(
-    () => {
-      if (!mediators || mediators.length === 0) {
-        setLoading(true);
-        getMediatorsList({ limit, offset })
-          .then((data) => {
-            dispatch(initMediators(data.rows, data.count));
-            setLoading(false);
-          })
-          .catch((err) => {
-            setLoading(false);
-            setSnackOpen(true);
-            setSnackMessage(errorHandler(err));
-          });
-      }
-    },
-    [
-      /* mediators, dispatch, limit, offset */
-    ] // eslint-disable-line
-  );
+  useEffect(() => {
+    if (!mediators || mediators.length === 0) {
+      setLoading(true);
+      getMediatorsList({ limit, offset })
+        .then((data) => {
+          dispatch(initMediators(data.rows, data.count));
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setSnackOpen(true);
+          setSnackMessage(errorHandler(err));
+        });
+    }
+  }, [mediators, dispatch, limit, offset]);
 
   if (loading) return <TableSkeleton />;
 
