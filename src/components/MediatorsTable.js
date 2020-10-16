@@ -70,7 +70,7 @@ const MediatorsTable = () => {
           setSnackMessage(errorHandler(err));
         });
     }
-  }, [mediators, dispatch, limit, offset, filterName]);
+  }, [mediators, dispatch, limit, offset, filterName, filterUnits]);
 
   if (loading) return <TableSkeleton />;
 
