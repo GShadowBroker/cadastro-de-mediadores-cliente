@@ -5,9 +5,14 @@ const baseUrl = "https://cadastro-de-mediadores.herokuapp.com/api";
 const timeout = 15000;
 
 export const getMediatorsList = async ({ limit, offset, ...filters }) => {
-  const { fullname } = filters;
+  const { filterName, filterUnits } = filters;
   const result = await axios.get(`${endpoint}/mediadores`, {
-    params: fullname ? { limit, offset, fullname } : { limit, offset },
+    params: {
+      limit,
+      offset,
+      filterName,
+      filterUnits: filterUnits && filterUnits.join(","),
+    },
     timeout,
   });
   return result.data;

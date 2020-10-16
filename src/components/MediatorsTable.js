@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Fade, InputBase, IconButton, Button } from "@material-ui/core";
+import {
+  Fade,
+  Grow,
+  IconButton,
+  Button,
+  TextField,
+  InputAdornment,
+  Tooltip,
+  FormControl,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  InputLabel,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CloseIcon from "@material-ui/icons/Close";
 import { Rating } from "@material-ui/lab";
@@ -12,6 +26,13 @@ import errorHandler from "../utils/errorHandler";
 import { useHistory } from "react-router-dom";
 import TableSkeleton from "./skeletons/TableSkeleton";
 import Spinner from "./utils/Spinner";
+import styled from "styled-components";
+import courts from "../assets/data/courts";
+
+const SForm = styled.form`
+  display: flex;
+  align-items: center;
+`;
 
 const MediatorsTable = () => {
   const history = useHistory();
@@ -29,9 +50,13 @@ const MediatorsTable = () => {
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
+
+  //filters
+  const [filterName, setFilterName] = useState("");
+  const [filterUnits, setFilterUnits] = useState([]);
 
   useEffect(() => {
+    if (filterName || (filterUnits && filterUnits.length)) return;
     if (!mediators || mediators.length === 0) {
       setLoading(true);
       getMediatorsList({ limit, offset })
@@ -45,7 +70,7 @@ const MediatorsTable = () => {
           setSnackMessage(errorHandler(err));
         });
     }
-  }, [mediators, dispatch, limit, offset]);
+  }, [mediators, dispatch, limit, offset, filterName]);
 
   if (loading) return <TableSkeleton />;
 
@@ -55,7 +80,7 @@ const MediatorsTable = () => {
       label: "Nome",
       options: {
         filter: false,
-        sort: true,
+        sort: false,
       },
     },
     {
@@ -63,7 +88,43 @@ const MediatorsTable = () => {
       label: "Unidades de atuação",
       options: {
         filter: true,
-        sort: true,
+        sort: false,
+        filterType: "custom",
+        filterList: filterUnits,
+        filterOptions: {
+          fullWidth: true,
+          display: (filterList, onChange, index, column) => {
+            const optionValues = courts;
+            return (
+              <FormControl>
+                <InputLabel htmlFor="filtrar-unidades-atuacao">
+                  Unidades
+                </InputLabel>
+                <Select
+                  id="filtrar-unidades-atuacao"
+                  multiple
+                  value={filterList[index]}
+                  renderValue={(selected) => selected.join(", ")}
+                  onChange={(event) => {
+                    filterList[index] = event.target.value;
+                    onChange(filterList[index], index, column);
+                    setFilterUnits(filterList[index]);
+                  }}
+                >
+                  {optionValues.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      <Checkbox
+                        color="primary"
+                        checked={filterList[index].indexOf(item) > -1}
+                      />
+                      <ListItemText primary={item} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          },
+        },
       },
     },
     {
@@ -71,15 +132,30 @@ const MediatorsTable = () => {
       label: "Cidades de atuação",
       options: {
         filter: true,
-        sort: true,
+        sort: false,
+        filterType: "textField",
+        filterOptions: {
+          fullWidth: true,
+        },
       },
     },
     {
       name: "qualificação",
       label: "Qualificação",
       options: {
-        filter: false,
+        filter: true,
         sort: false,
+        filterType: "multiselect",
+        filterOptions: {
+          fullWidth: true,
+          names: [
+            "1 estrela",
+            "2 estrelas",
+            "3 estrelas",
+            "4 estrelas",
+            "5 estrelas",
+          ],
+        },
       },
     },
     {
@@ -87,7 +163,18 @@ const MediatorsTable = () => {
       label: "Valor médio",
       options: {
         filter: true,
-        sort: true,
+        sort: false,
+        filterType: "multiselect",
+        filterOptions: {
+          fullWidth: true,
+          names: [
+            "Voluntário",
+            "Patamar básico",
+            "Patamar intermediário",
+            "Patamar avançado",
+            "Patamar extraordinário",
+          ],
+        },
       },
     },
   ];
@@ -131,7 +218,7 @@ const MediatorsTable = () => {
       // Next page
       const nextOffset = offset + limit;
       setPage(newPage);
-      getMediatorsList({ limit, offset: nextOffset, fullname: searchTerm })
+      getMediatorsList({ limit, offset: nextOffset, filterName, filterUnits })
         .then((data) => {
           dispatch(initMediators(data.rows, data.count));
           setOffset(nextOffset);
@@ -147,7 +234,7 @@ const MediatorsTable = () => {
       // Previous page
       const prevOffset = offset - limit;
       setPage(newPage);
-      getMediatorsList({ limit, offset: prevOffset, fullname: searchTerm })
+      getMediatorsList({ limit, offset: prevOffset, filterName, filterUnits })
         .then((data) => {
           dispatch(initMediators(data.rows, data.count));
           setOffset(prevOffset);
@@ -167,7 +254,12 @@ const MediatorsTable = () => {
     setOffset(0);
     setPage(0);
     setLimit(newRowsPerPage);
-    getMediatorsList({ limit: newRowsPerPage, offset: 0, fullname: searchTerm })
+    getMediatorsList({
+      limit: newRowsPerPage,
+      offset: 0,
+      filterName,
+      filterUnits,
+    })
       .then((data) => {
         dispatch(initMediators(data.rows, data.count));
         setLoading(false);
@@ -182,7 +274,7 @@ const MediatorsTable = () => {
 
   const handleSearchClick = (search) => {
     setSearchLoading(true);
-    getMediatorsList({ limit, offset: 0, fullname: search })
+    getMediatorsList({ limit, offset: 0, filterName: search, filterUnits })
       .then((data) => {
         dispatch(initMediators(data.rows, data.count));
         setSearchLoading(false);
@@ -194,7 +286,7 @@ const MediatorsTable = () => {
       });
   };
   const handleSearchClear = () => {
-    setSearchTerm("");
+    setFilterName("");
     setPage(0);
     getMediatorsList({ limit, offset: 0 })
       .then((data) => {
@@ -266,36 +358,131 @@ const MediatorsTable = () => {
       }
     },
     customSearchRender: (searchText, handleSearch, hideSearch, options) => (
-      <div>
-        <IconButton>
-          <SearchIcon />
-        </IconButton>
-        <InputBase
-          placeholder="Pesquisar mediador"
-          inputProps={{ "aria-label": "pesquisar por mediador" }}
-          value={searchTerm}
-          onChange={({ target }) => setSearchTerm(target.value)}
-        />
-        <IconButton onClick={handleSearchClear} disabled={!searchTerm}>
-          <CloseIcon fontSize="small" />
-        </IconButton>
-        {searchLoading ? (
-          <Button variant="contained" disabled>
-            <Spinner />
-            <span style={{ marginLeft: 5 }}>processando</span>
-          </Button>
-        ) : (
+      <Grow in={true}>
+        <SForm
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearchClick(filterName);
+          }}
+        >
+          <TextField
+            id="pesquisar mediadores"
+            name="search"
+            placeholder="pesquisar mediador"
+            size="small"
+            value={filterName}
+            onChange={({ target }) => setFilterName(target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+              "aria-label": "pesquisar",
+            }}
+          />
+          <IconButton onClick={handleSearchClear} disabled={!filterName}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+          {searchLoading ? (
+            <Button variant="contained" disabled>
+              <Spinner />
+              <span style={{ marginLeft: 5 }}>processando</span>
+            </Button>
+          ) : (
+            <Button variant="contained" type="submit" disabled={!filterName}>
+              Pesquisar
+            </Button>
+          )}
+          <Tooltip title="Resetar lista de mediadores">
+            <Button
+              variant="text"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSearchClear();
+              }}
+              size="small"
+              style={{ marginLeft: "1rem" }}
+            >
+              resetar
+            </Button>
+          </Tooltip>
+        </SForm>
+      </Grow>
+    ),
+    searchOpen: !!filterName,
+    confirmFilters: true,
+    customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
+      return (
+        <div style={{ marginTop: "40px" }}>
           <Button
             variant="contained"
-            onClick={() => handleSearchClick(searchTerm)}
-            disabled={!searchTerm}
+            onClick={() => {
+              setLoading(true);
+              getMediatorsList({
+                limit,
+                offset: 0,
+                filterName,
+                filterUnits,
+              })
+                .then((data) => {
+                  dispatch(initMediators(data.rows, data.count));
+                  setOffset(0);
+                  setLoading(false);
+                  applyNewFilters();
+                })
+                .catch((err) => {
+                  setSnackOpen(true);
+                  setSnackMessage(errorHandler(err));
+                  setLoading(false);
+                });
+            }}
           >
-            Pesquisar
+            Aplicar Filtros
           </Button>
-        )}
-      </div>
-    ),
-    searchOpen: !!searchTerm,
+        </div>
+      );
+    },
+    onFilterChipClose: (index, removedFilter, filterList) => {
+      switch (index) {
+        case 1:
+          console.log("removing unit");
+          const newFiltersList = [...filterUnits].filter(
+            (item) => item !== removedFilter
+          );
+          setFilterUnits(newFiltersList);
+          setLoading(true);
+          getMediatorsList({
+            limit,
+            offset: 0,
+            filterName,
+            filterUnits: newFiltersList,
+          })
+            .then((data) => {
+              dispatch(initMediators(data.rows, data.count));
+              setOffset(0);
+              setLoading(false);
+            })
+            .catch((err) => {
+              setSnackOpen(true);
+              setSnackMessage(errorHandler(err));
+              setLoading(false);
+            });
+
+          break;
+        case 2:
+          console.log("removing city");
+          break;
+        case 3:
+          console.log("removing qualification");
+          break;
+        case 4:
+          console.log("removing average value");
+          break;
+        default:
+          break;
+      }
+    },
     onRowClick: (rowData, rowMeta) => {
       history.push(
         `/perfil/publico/mediador/${mediators[+rowMeta.dataIndex].id}`
