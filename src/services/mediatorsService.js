@@ -5,22 +5,67 @@ const baseUrl = "https://cadastro-de-mediadores.herokuapp.com/api";
 const timeout = 15000;
 
 export const getMediatorsList = async ({ limit, offset, ...filters }) => {
-  const { filterName, filterUnits } = filters;
+  const {
+    filterName,
+    filterUnits,
+    filterAverageValues,
+    filterQualifications,
+    filterCity,
+  } = filters;
+
+  let allParams = {
+    limit,
+    offset,
+    filterName,
+    filterUnits: filterUnits && filterUnits.join(","),
+    filterAverageValues: filterAverageValues && filterAverageValues.join(","),
+    filterQualifications:
+      filterQualifications && filterQualifications.join(","),
+    filterCity,
+  };
+  // Remove unnecessary filters
+  let params = {};
+  for (let item in allParams) {
+    if (allParams[item]) {
+      params[item] = allParams[item];
+    }
+  }
+
   const result = await axios.get(`${endpoint}/mediadores`, {
-    params: {
-      limit,
-      offset,
-      filterName,
-      filterUnits: filterUnits && filterUnits.join(","),
-    },
+    params,
     timeout,
   });
   return result.data;
 };
 
 export const getCamarasList = async ({ limit, offset, ...filters }) => {
+  const {
+    filterName,
+    filterUnits,
+    filterAverageValues,
+    filterQualifications,
+    filterCity,
+  } = filters;
+
+  let allParams = {
+    limit,
+    offset,
+    filterName,
+    filterUnits: filterUnits && filterUnits.join(","),
+    filterAverageValues: filterAverageValues && filterAverageValues.join(","),
+    filterQualifications:
+      filterQualifications && filterQualifications.join(","),
+    filterCity,
+  };
+  // Remove unnecessary filters
+  let params = {};
+  for (let item in allParams) {
+    if (allParams[item]) {
+      params[item] = allParams[item];
+    }
+  }
   const result = await axios.get(`${endpoint}/camaras`, {
-    params: { limit, offset },
+    params,
     timeout,
   });
   return result.data;

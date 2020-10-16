@@ -16,11 +16,23 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CloseIcon from "@material-ui/icons/Close";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Rating } from "@material-ui/lab";
 import MUIDataTable from "mui-datatables";
 import { useSelector, useDispatch } from "react-redux";
 import { getMediatorsList } from "../services/mediatorsService";
-import { initMediators } from "../store/mediatorsReducer";
+import {
+  initMediators,
+  onChangeFilterName,
+  onChangeFilterUnits,
+  onChangeFilterAverageValues,
+  onChangeFilterQualifications,
+  onChangeFilterCity,
+  onChangeFilterUf,
+  onChangeOffset,
+  onChangeLimit,
+  onChangePage,
+} from "../store/mediatorsReducer";
 import Snackbar from "./utils/Snackbar";
 import errorHandler from "../utils/errorHandler";
 import { useHistory } from "react-router-dom";
@@ -28,35 +40,64 @@ import TableSkeleton from "./skeletons/TableSkeleton";
 import Spinner from "./utils/Spinner";
 import styled from "styled-components";
 import courts from "../assets/data/courts";
+import states from "../assets/data/uf";
+import capitalizeWord from "../utils/capitalizeWord";
 
 const SForm = styled.form`
   display: flex;
   align-items: center;
 `;
 
+const ResetContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const MediatorsTable = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
 
-  const mediators = useSelector((state) => state.mediatorsReducer.mediators);
-  const mediatorsCount = useSelector(
-    (state) => state.mediatorsReducer.mediatorsCount
-  );
-  const dispatch = useDispatch();
+  const mediatorsState = useSelector((state) => state.mediatorsReducer);
 
-  const [limit, setLimit] = useState(50);
-  const [offset, setOffset] = useState(0);
-  const [page, setPage] = useState(0);
+  const mediators = mediatorsState.currentList;
+  const mediatorsCount = mediatorsState.count;
+  const limit = mediatorsState.limit;
+  const offset = mediatorsState.offset;
+  const page = mediatorsState.page;
 
   //filters
-  const [filterName, setFilterName] = useState("");
-  const [filterUnits, setFilterUnits] = useState([]);
+  const filterName = mediatorsState.filters.filterName;
+  const filterUnits = mediatorsState.filters.filterUnits;
+  const filterAverageValues = mediatorsState.filters.filterAverageValues;
+  const filterQualifications = mediatorsState.filters.filterQualifications;
+  const filterCity = mediatorsState.filters.filterCity;
+  const filterUf = mediatorsState.filters.filterUf;
+
+  const formatCity = (uf, city) => {
+    if (!uf || !city) return "";
+    return `${capitalizeWord(city)}/${uf}`;
+  };
 
   useEffect(() => {
-    if (filterName || (filterUnits && filterUnits.length)) return;
+    const hasFilters = () => {
+      if (
+        filterName ||
+        filterUnits.length > 0 ||
+        filterAverageValues.length > 0 ||
+        filterQualifications.length > 0 ||
+        filterCity ||
+        filterUf
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    if (hasFilters()) return;
     if (!mediators || mediators.length === 0) {
       setLoading(true);
       getMediatorsList({ limit, offset })
@@ -70,7 +111,31 @@ const MediatorsTable = () => {
           setSnackMessage(errorHandler(err));
         });
     }
-  }, [mediators, dispatch, limit, offset, filterName, filterUnits]);
+  }, [
+    mediators,
+    dispatch,
+    limit,
+    offset,
+    filterName,
+    filterUnits,
+    filterAverageValues,
+    filterQualifications,
+    filterCity,
+    filterUf,
+  ]);
+
+  const hasFilters = () => {
+    if (
+      filterUnits.length > 0 ||
+      filterAverageValues.length > 0 ||
+      filterQualifications.length > 0 ||
+      filterCity ||
+      filterUf
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   if (loading) return <TableSkeleton />;
 
@@ -98,7 +163,7 @@ const MediatorsTable = () => {
             return (
               <FormControl>
                 <InputLabel htmlFor="filtrar-unidades-atuacao">
-                  Unidades
+                  Unidades de atuação
                 </InputLabel>
                 <Select
                   id="filtrar-unidades-atuacao"
@@ -108,7 +173,7 @@ const MediatorsTable = () => {
                   onChange={(event) => {
                     filterList[index] = event.target.value;
                     onChange(filterList[index], index, column);
-                    setFilterUnits(filterList[index]);
+                    dispatch(onChangeFilterUnits(filterList[index]));
                   }}
                 >
                   {optionValues.map((item) => (
@@ -133,9 +198,44 @@ const MediatorsTable = () => {
       options: {
         filter: true,
         sort: false,
-        filterType: "textField",
+        filterType: "custom",
+        filterList: filterCity ? [filterCity] : [],
         filterOptions: {
           fullWidth: true,
+          display: (filterList, onChange, index, column) => {
+            return (
+              <FormControl>
+                <div>
+                  <InputLabel htmlFor="filtrar-uf">UF</InputLabel>
+                  <Select
+                    id="filtrar-uf"
+                    label="UF"
+                    value={filterUf}
+                    onChange={(event) => {
+                      dispatch(onChangeFilterUf(event.target.value));
+                    }}
+                  >
+                    <MenuItem value="">selecione</MenuItem>
+                    {states.map((state) => (
+                      <MenuItem key={state.sigla} value={state.sigla}>
+                        {state.sigla}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <TextField
+                    id="filtrar-cidade"
+                    name="filter_city"
+                    label="Cidade de atuação"
+                    value={filterCity}
+                    onChange={(event) => {
+                      dispatch(onChangeFilterCity(event.target.value));
+                    }}
+                    style={{ marginLeft: "1rem" }}
+                  />
+                </div>
+              </FormControl>
+            );
+          },
         },
       },
     },
@@ -145,16 +245,47 @@ const MediatorsTable = () => {
       options: {
         filter: true,
         sort: false,
-        filterType: "multiselect",
+        filterType: "custom",
+        filterList: filterQualifications,
         filterOptions: {
           fullWidth: true,
-          names: [
-            "1 estrela",
-            "2 estrelas",
-            "3 estrelas",
-            "4 estrelas",
-            "5 estrelas",
-          ],
+          display: (filterList, onChange, index, column) => {
+            const optionValues = [
+              "5 estrelas",
+              "4 estrelas",
+              "3 estrelas",
+              "2 estrelas",
+              "1 estrela",
+            ];
+            return (
+              <FormControl>
+                <InputLabel htmlFor="filtrar-qualificacao">
+                  Qualificação
+                </InputLabel>
+                <Select
+                  id="filtrar-qualificacao"
+                  multiple
+                  value={filterList[index]}
+                  renderValue={(selected) => selected.join(", ")}
+                  onChange={(event) => {
+                    filterList[index] = event.target.value;
+                    onChange(filterList[index], index, column);
+                    dispatch(onChangeFilterQualifications(filterList[index]));
+                  }}
+                >
+                  {optionValues.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      <Checkbox
+                        color="primary"
+                        checked={filterList[index].indexOf(item) > -1}
+                      />
+                      <ListItemText primary={item} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          },
         },
       },
     },
@@ -164,16 +295,47 @@ const MediatorsTable = () => {
       options: {
         filter: true,
         sort: false,
-        filterType: "multiselect",
+        filterType: "custom",
+        filterList: filterAverageValues,
         filterOptions: {
           fullWidth: true,
-          names: [
-            "Voluntário",
-            "Patamar básico",
-            "Patamar intermediário",
-            "Patamar avançado",
-            "Patamar extraordinário",
-          ],
+          display: (filterList, onChange, index, column) => {
+            const optionValues = [
+              { value: "voluntario", label: "Voluntário" },
+              { value: "$", label: "Patamar básico" },
+              { value: "$$", label: "Patamar intermediário" },
+              { value: "$$$", label: "Patamar avançado" },
+              { value: "$$$$", label: "Patamar extraordinário" },
+            ];
+            return (
+              <FormControl>
+                <InputLabel htmlFor="filtrar-valor-medio">
+                  Valor médio
+                </InputLabel>
+                <Select
+                  id="filtrar-valor-medio"
+                  multiple
+                  value={filterList[index]}
+                  renderValue={(selected) => selected.join(", ")}
+                  onChange={(event) => {
+                    filterList[index] = event.target.value;
+                    onChange(filterList[index], index, column);
+                    dispatch(onChangeFilterAverageValues(filterList[index]));
+                  }}
+                >
+                  {optionValues.map((item) => (
+                    <MenuItem key={item.value} value={item.value}>
+                      <Checkbox
+                        color="primary"
+                        checked={filterList[index].indexOf(item.value) > -1}
+                      />
+                      <ListItemText primary={item.label} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          },
         },
       },
     },
@@ -217,11 +379,19 @@ const MediatorsTable = () => {
     if (newPage > page) {
       // Next page
       const nextOffset = offset + limit;
-      setPage(newPage);
-      getMediatorsList({ limit, offset: nextOffset, filterName, filterUnits })
+      dispatch(onChangePage(newPage));
+      getMediatorsList({
+        limit,
+        offset: nextOffset,
+        filterName,
+        filterUnits,
+        filterAverageValues,
+        filterQualifications,
+        filterCity: formatCity(filterUf, filterCity),
+      })
         .then((data) => {
           dispatch(initMediators(data.rows, data.count));
-          setOffset(nextOffset);
+          dispatch(onChangeOffset(nextOffset));
           setLoading(false);
         })
         .catch((err) => {
@@ -233,11 +403,19 @@ const MediatorsTable = () => {
     } else {
       // Previous page
       const prevOffset = offset - limit;
-      setPage(newPage);
-      getMediatorsList({ limit, offset: prevOffset, filterName, filterUnits })
+      dispatch(onChangePage(newPage));
+      getMediatorsList({
+        limit,
+        offset: prevOffset,
+        filterName,
+        filterUnits,
+        filterAverageValues,
+        filterQualifications,
+        filterCity: formatCity(filterUf, filterCity),
+      })
         .then((data) => {
           dispatch(initMediators(data.rows, data.count));
-          setOffset(prevOffset);
+          dispatch(onChangeOffset(prevOffset));
           setLoading(false);
         })
         .catch((err) => {
@@ -251,14 +429,17 @@ const MediatorsTable = () => {
 
   const changeRowsPerPage = (newRowsPerPage) => {
     setLoading(true);
-    setOffset(0);
-    setPage(0);
-    setLimit(newRowsPerPage);
+    dispatch(onChangeOffset(0));
+    dispatch(onChangePage(0));
+    dispatch(onChangeLimit(newRowsPerPage));
     getMediatorsList({
       limit: newRowsPerPage,
       offset: 0,
       filterName,
       filterUnits,
+      filterAverageValues,
+      filterQualifications,
+      filterCity: formatCity(filterUf, filterCity),
     })
       .then((data) => {
         dispatch(initMediators(data.rows, data.count));
@@ -274,7 +455,15 @@ const MediatorsTable = () => {
 
   const handleSearchClick = (search) => {
     setSearchLoading(true);
-    getMediatorsList({ limit, offset: 0, filterName: search, filterUnits })
+    getMediatorsList({
+      limit,
+      offset: 0,
+      filterName: search,
+      filterUnits,
+      filterAverageValues,
+      filterQualifications,
+      filterCity: formatCity(filterUf, filterCity),
+    })
       .then((data) => {
         dispatch(initMediators(data.rows, data.count));
         setSearchLoading(false);
@@ -286,15 +475,46 @@ const MediatorsTable = () => {
       });
   };
   const handleSearchClear = () => {
-    setFilterName("");
-    setPage(0);
-    getMediatorsList({ limit, offset: 0 })
+    dispatch(onChangeFilterName(""));
+    dispatch(onChangePage(0));
+    getMediatorsList({
+      limit,
+      offset: 0,
+      filterUnits,
+      filterAverageValues,
+      filterQualifications,
+      filterCity: formatCity(filterUf, filterCity),
+    })
       .then((data) => {
         dispatch(initMediators(data.rows, data.count));
       })
       .catch((err) => {
         setSnackOpen(true);
         setSnackMessage(errorHandler(err));
+      });
+  };
+
+  const resetAllFilters = () => {
+    setLoading(true);
+    dispatch(onChangeFilterName(""));
+    dispatch(onChangeFilterUnits([]));
+    dispatch(onChangeFilterAverageValues([]));
+    dispatch(onChangeFilterQualifications([]));
+    dispatch(onChangeFilterUf(""));
+    dispatch(onChangeFilterCity(""));
+    dispatch(onChangePage(0));
+    getMediatorsList({
+      limit,
+      offset: 0,
+    })
+      .then((data) => {
+        dispatch(initMediators(data.rows, data.count));
+        setLoading(false);
+      })
+      .catch((err) => {
+        setSnackOpen(true);
+        setSnackMessage(errorHandler(err));
+        setLoading(false);
       });
   };
 
@@ -371,7 +591,9 @@ const MediatorsTable = () => {
             placeholder="pesquisar mediador"
             size="small"
             value={filterName}
-            onChange={({ target }) => setFilterName(target.value)}
+            onChange={({ target }) =>
+              dispatch(onChangeFilterName(target.value))
+            }
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -416,6 +638,7 @@ const MediatorsTable = () => {
       return (
         <div style={{ marginTop: "40px" }}>
           <Button
+            disabled={!hasFilters()}
             variant="contained"
             onClick={() => {
               setLoading(true);
@@ -424,10 +647,14 @@ const MediatorsTable = () => {
                 offset: 0,
                 filterName,
                 filterUnits,
+                filterAverageValues,
+                filterQualifications,
+                filterCity: formatCity(filterUf, filterCity),
               })
                 .then((data) => {
                   dispatch(initMediators(data.rows, data.count));
-                  setOffset(0);
+                  dispatch(onChangeOffset(0));
+                  dispatch(onChangePage(0));
                   setLoading(false);
                   applyNewFilters();
                 })
@@ -446,21 +673,23 @@ const MediatorsTable = () => {
     onFilterChipClose: (index, removedFilter, filterList) => {
       switch (index) {
         case 1:
-          console.log("removing unit");
           const newFiltersList = [...filterUnits].filter(
             (item) => item !== removedFilter
           );
-          setFilterUnits(newFiltersList);
+          dispatch(onChangeFilterUnits(newFiltersList));
           setLoading(true);
           getMediatorsList({
             limit,
             offset: 0,
             filterName,
             filterUnits: newFiltersList,
+            filterAverageValues,
+            filterQualifications,
+            filterCity: formatCity(filterUf, filterCity),
           })
             .then((data) => {
               dispatch(initMediators(data.rows, data.count));
-              setOffset(0);
+              dispatch(onChangeOffset(0));
               setLoading(false);
             })
             .catch((err) => {
@@ -471,13 +700,80 @@ const MediatorsTable = () => {
 
           break;
         case 2:
-          console.log("removing city");
+          dispatch(onChangeFilterCity(""));
+          dispatch(onChangeFilterUf(""));
+          setLoading(true);
+          getMediatorsList({
+            limit,
+            offset: 0,
+            filterName,
+            filterUnits,
+            filterAverageValues,
+            filterQualifications,
+            filterCity: null,
+          })
+            .then((data) => {
+              dispatch(initMediators(data.rows, data.count));
+              dispatch(onChangeOffset(0));
+              setLoading(false);
+            })
+            .catch((err) => {
+              setSnackOpen(true);
+              setSnackMessage(errorHandler(err));
+              setLoading(false);
+            });
           break;
         case 3:
-          console.log("removing qualification");
+          const newQualifList = [...filterQualifications].filter(
+            (item) => item !== removedFilter
+          );
+          dispatch(onChangeFilterQualifications(newQualifList));
+          setLoading(true);
+          getMediatorsList({
+            limit,
+            offset: 0,
+            filterName,
+            filterUnits,
+            filterAverageValues,
+            filterQualifications: newQualifList,
+            filterCity: formatCity(filterUf, filterCity),
+          })
+            .then((data) => {
+              dispatch(initMediators(data.rows, data.count));
+              dispatch(onChangeOffset(0));
+              setLoading(false);
+            })
+            .catch((err) => {
+              setSnackOpen(true);
+              setSnackMessage(errorHandler(err));
+              setLoading(false);
+            });
           break;
         case 4:
-          console.log("removing average value");
+          const newFilteredAverages = [...filterAverageValues].filter(
+            (item) => item !== removedFilter
+          );
+          dispatch(onChangeFilterAverageValues(newFilteredAverages));
+          setLoading(true);
+          getMediatorsList({
+            limit,
+            offset: 0,
+            filterName,
+            filterUnits,
+            filterAverageValues: newFilteredAverages,
+            filterQualifications,
+            filterCity: formatCity(filterUf, filterCity),
+          })
+            .then((data) => {
+              dispatch(initMediators(data.rows, data.count));
+              dispatch(onChangeOffset(0));
+              setLoading(false);
+            })
+            .catch((err) => {
+              setSnackOpen(true);
+              setSnackMessage(errorHandler(err));
+              setLoading(false);
+            });
           break;
         default:
           break;
@@ -493,12 +789,26 @@ const MediatorsTable = () => {
   return (
     <React.Fragment>
       <Fade in={true}>
-        <MUIDataTable
-          title={"Lista de mediadores"}
-          data={data}
-          columns={columns}
-          options={options}
-        />
+        <div>
+          {hasFilters() && (
+            <ResetContainer>
+              <Button
+                size="small"
+                startIcon={<AutorenewIcon />}
+                color="secondary"
+                onClick={resetAllFilters}
+              >
+                limpar todos os filtros
+              </Button>
+            </ResetContainer>
+          )}
+          <MUIDataTable
+            title={"Lista de mediadores"}
+            data={data}
+            columns={columns}
+            options={options}
+          />
+        </div>
       </Fade>
       <Snackbar
         message={snackMessage}

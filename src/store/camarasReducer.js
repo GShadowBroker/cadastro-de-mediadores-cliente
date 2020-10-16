@@ -14,36 +14,36 @@ const initialState = {
   },
 };
 
-const mediatorsReducer = (state = initialState, action) => {
+const camarasReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "ADD_MEDIATORS":
+    case "ADD_CAMARAS":
       return {
         ...state,
-        currentList: action.mediators,
+        currentList: action.camaras,
         count: action.count,
       };
-    case "CLEAR_MEDIATORS":
+    case "CLEAR_CAMARAS":
       return initialState;
 
-    case "CHANGE_MEDIATORS_OFFSET":
+    case "CHANGE_CAMARAS_OFFSET":
       return {
         ...state,
         offset: action.payload,
       };
 
-    case "CHANGE_MEDIATORS_LIMIT":
+    case "CHANGE_CAMARAS_LIMIT":
       return {
         ...state,
         limit: action.payload,
       };
 
-    case "CHANGE_MEDIATORS_PAGE":
+    case "CHANGE_CAMARAS_PAGE":
       return {
         ...state,
         page: action.payload,
       };
 
-    case "CHANGE_MEDIATORS_FILTER_NAME":
+    case "CHANGE_CAMARAS_FILTER_NAME":
       return {
         ...state,
         filters: {
@@ -52,7 +52,7 @@ const mediatorsReducer = (state = initialState, action) => {
         },
       };
 
-    case "CHANGE_MEDIATORS_FILTER_UNITS":
+    case "CHANGE_CAMARAS_FILTER_UNITS":
       return {
         ...state,
         filters: {
@@ -61,7 +61,7 @@ const mediatorsReducer = (state = initialState, action) => {
         },
       };
 
-    case "CHANGE_MEDIATORS_FILTER_AVERAGE_VALUES":
+    case "CHANGE_CAMARAS_FILTER_AVERAGE_VALUES":
       return {
         ...state,
         filters: {
@@ -70,7 +70,7 @@ const mediatorsReducer = (state = initialState, action) => {
         },
       };
 
-    case "CHANGE_MEDIATORS_FILTER_QUALIFICATIONS":
+    case "CHANGE_CAMARAS_FILTER_QUALIFICATIONS":
       return {
         ...state,
         filters: {
@@ -79,7 +79,7 @@ const mediatorsReducer = (state = initialState, action) => {
         },
       };
 
-    case "CHANGE_MEDIATORS_FILTER_CITY":
+    case "CHANGE_CAMARAS_FILTER_CITY":
       return {
         ...state,
         filters: {
@@ -88,7 +88,7 @@ const mediatorsReducer = (state = initialState, action) => {
         },
       };
 
-    case "CHANGE_MEDIATORS_FILTER_UF":
+    case "CHANGE_CAMARAS_FILTER_UF":
       return {
         ...state,
         filters: {
@@ -101,55 +101,55 @@ const mediatorsReducer = (state = initialState, action) => {
   }
 };
 
-export const initMediators = (mediators, count) => ({
-  type: "ADD_MEDIATORS",
-  mediators,
+export const initCamaras = (camaras, count) => ({
+  type: "ADD_CAMARAS",
+  camaras,
   count,
 });
 
 export const onChangeOffset = (offset) => ({
-  type: "CHANGE_MEDIATORS_OFFSET",
+  type: "CHANGE_CAMARAS_OFFSET",
   payload: offset,
 });
 
 export const onChangeLimit = (limit) => ({
-  type: "CHANGE_MEDIATORS_LIMIT",
+  type: "CHANGE_CAMARAS_LIMIT",
   payload: limit,
 });
 
 export const onChangePage = (page) => ({
-  type: "CHANGE_MEDIATORS_PAGE",
+  type: "CHANGE_CAMARAS_PAGE",
   payload: page,
 });
 
 export const onChangeFilterName = (name) => ({
-  type: "CHANGE_MEDIATORS_FILTER_NAME",
+  type: "CHANGE_CAMARAS_FILTER_NAME",
   payload: name,
 });
 
 export const onChangeFilterUnits = (units) => ({
-  type: "CHANGE_MEDIATORS_FILTER_UNITS",
+  type: "CHANGE_CAMARAS_FILTER_UNITS",
   payload: units,
 });
 
 export const onChangeFilterAverageValues = (average_value) => ({
-  type: "CHANGE_MEDIATORS_FILTER_AVERAGE_VALUES",
+  type: "CHANGE_CAMARAS_FILTER_AVERAGE_VALUES",
   payload: average_value,
 });
 
 export const onChangeFilterQualifications = (qualifications) => ({
-  type: "CHANGE_MEDIATORS_FILTER_QUALIFICATIONS",
+  type: "CHANGE_CAMARAS_FILTER_QUALIFICATIONS",
   payload: qualifications,
 });
 
 export const onChangeFilterCity = (city) => ({
-  type: "CHANGE_MEDIATORS_FILTER_CITY",
+  type: "CHANGE_CAMARAS_FILTER_CITY",
   payload: city,
 });
 
 export const onChangeFilterUf = (uf) => ({
-  type: "CHANGE_MEDIATORS_FILTER_UF",
+  type: "CHANGE_CAMARAS_FILTER_UF",
   payload: uf,
 });
 
-export default mediatorsReducer;
+export default camarasReducer;

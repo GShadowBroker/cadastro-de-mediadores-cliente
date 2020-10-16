@@ -1,6 +1,14 @@
-const isCepValid = (cep) => {
-  const regex = new RegExp(/^\d{5}\-?\d{3}$/, "i");
-  return regex.test(cep);
+let params = {
+  a: 1,
+  b: null,
+  c: undefined,
 };
 
-console.log(isCepValid("79851270"));
+let cleanParams = {};
+for (let item in params) {
+  if (params[item]) {
+    cleanParams[item] = params[item];
+  }
+}
+
+console.log(cleanParams);
