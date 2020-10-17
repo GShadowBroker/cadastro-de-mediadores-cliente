@@ -172,6 +172,7 @@ const Finish = ({ handleNext, handleBack }) => {
         return "Campo inválido";
     }
   };
+
   return (
     <Fade in={true}>
       <Form onSubmit={handleSubmit(submitStep)} noValidate>
